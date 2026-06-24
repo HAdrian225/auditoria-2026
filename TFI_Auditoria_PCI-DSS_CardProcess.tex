@@ -1,0 +1,1137 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{lmodern}
+\usepackage{ragged2e}
+
+\geometry{a4paper, top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+
+\newcolumntype{P}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+\newcolumntype{L}{>{\RaggedRight\arraybackslash}X}
+
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.3}
+
+\titleformat{\section}{\large\bfseries}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
+\titleformat{\subsubsection}{\small\bfseries\itshape}{}{0em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{TFI --- Auditor\'ia PCI-DSS v4.0.1 --- CardProcess S.A.}}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\setlength{\headheight}{14pt}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+    urlcolor=blue!60!black,
+    pdftitle={TFI Auditor\'ia PCI-DSS v4.0.1},
+    pdfauthor={Quiroga, Bianchi \& Asociados}
+}
+
+\begin{document}
+
+% ============================================================
+% PORTADA
+% ============================================================
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\LARGE\bfseries Auditor\'ia de Cumplimiento PCI-DSS v4.0.1\\[0.4em]
+Requisitos 1, 2, 7, 8 y 10}\\[1.5cm]
+
+\noindent\rule{\linewidth}{0.4pt}\\[0.8cm]
+
+\begin{tabularx}{\textwidth}{P{5cm}L}
+\textbf{Empresa auditada:} & CardProcess S.A. \\
+\textbf{Domicilio:} & Av. Corrientes 1234, Piso 8, Ciudad Aut\'onoma de Buenos Aires, Argentina \\
+\textbf{Actividad:} & Procesamiento de transacciones con tarjetas de cr\'edito y d\'ebito \\
+\textbf{Tipo de entidad:} & Service Provider (procesadora de pagos) \\
+\textbf{Volumen transaccional:} & $\sim$500.000 transacciones/mes para 3 bancos emisores \\
+\textbf{Dotaci\'on:} & 47 empleados \\
+\textbf{Marco de referencia:} & PCI-DSS v4.0.1 \\
+\textbf{Normativa complementaria:} & Ley 25.326; BCRA Comunicaci\'on ``A'' 7724; ISO/IEC 27002:2022 \\
+\textbf{Firma auditora:} & Quiroga, Bianchi \& Asociados --- Auditores en Seguridad de la Informaci\'on \\
+\textbf{Equipo auditor:} & Lic. Mariana Quiroga (L\'ider); Cr. Federico Bianchi (Senior); Sr. Lucas Dom\'inguez (Junior) \\
+\textbf{Per\'iodo auditado:} & 01/05/2026 al 31/05/2026 \\
+\textbf{Fecha del informe:} & 22 de junio de 2026 \\
+\textbf{Confidencialidad:} & Documento clasificado --- distribuci\'on restringida a Directorio y Gerencia de TI \\
+\end{tabularx}
+
+\vspace{0.8cm}
+\noindent\rule{\linewidth}{0.4pt}
+\end{titlepage}
+
+% ============================================================
+% GLOSARIO DE OC
+% ============================================================
+\section*{Glosario de Objetos de Control (OC)}
+
+\begin{tabularx}{\textwidth}{P{1.5cm}P{6cm}L}
+\toprule
+\textbf{OC} & \textbf{Descripci\'on} & \textbf{Requisitos PCI-DSS} \\
+\midrule
+OC-1 & Gesti\'on de identidades, accesos y trazabilidad & Req. 7 (Restricci\'on de acceso), Req. 8 (Identificaci\'on/autenticaci\'on), Req. 10 (Registro y monitoreo) \\
+OC-2 & Seguridad de red, configuraci\'on y endurecimiento & Req. 1 (Controles de seguridad de red), Req. 2 (Configuraciones seguras) \\
+OC-3 & Gesti\'on de personal, terceros y aspectos formales & Req. 12 (Pol\'iticas/programa de seguridad --- alcance parcial), ISO 27002:2022 Control 6.6 (acuerdos de confidencialidad) \\
+\bottomrule
+\end{tabularx}
+
+\vspace{0.5em}
+\begin{quote}
+\textbf{Nota sobre nomenclatura COSO:} Las preguntas del CEAC se clasifican por componente del marco COSO 2013 (Ambiente de Control, Evaluaci\'on de Riesgos, Actividades de Control), de modo de articular el enfoque de control interno con el marco t\'ecnico PCI-DSS.
+\end{quote}
+
+\clearpage
+
+% ============================================================
+% ENTREGABLE 1 — PROPUESTA DE AUDITORÍA
+% ============================================================
+\section{Entregable 1 --- Propuesta de Auditor\'ia}
+
+\subsection{Objetivo General}
+
+Evaluar el grado de cumplimiento de CardProcess S.A. respecto de los requisitos 1, 2, 7, 8 y 10 del est\'andar PCI-DSS v4.0.1 sobre el Entorno de Datos de Tarjetahabientes (CDE --- Cardholder Data Environment), emitiendo un informe de hallazgos, observaciones y recomendaciones de remediaci\'on.
+
+\subsection{Objetivos Espec\'ificos}
+
+\begin{enumerate}[leftmargin=*]
+  \item Verificar la existencia y eficacia de controles de seguridad de red sobre el CDE (Req. 1).
+  \item Comprobar el endurecimiento (``hardening'') y la eliminaci\'on de configuraciones y credenciales por defecto en los componentes del CDE (Req. 2).
+  \item Evaluar la restricci\'on de acceso a datos de tarjetahabientes seg\'un el principio de necesidad de saber (Req. 7).
+  \item Validar los mecanismos de identificaci\'on y autenticaci\'on de usuarios, incluyendo MFA y pol\'iticas de contrase\~nas (Req. 8).
+  \item Verificar el registro, la protecci\'on y la retenci\'on de los logs de actividad del CDE (Req. 10).
+  \item Evaluar el tratamiento formal del personal interno y de terceros con acceso al CDE (Req. 12 parcial, ISO 27002:2022).
+  \item Determinar el nivel de confianza del ambiente de control y emitir recomendaciones priorizadas.
+\end{enumerate}
+
+\subsection{Alcance}
+
+\begin{tabularx}{\textwidth}{P{4.5cm}P{2.8cm}P{3cm}L}
+\toprule
+\textbf{Componente} & \textbf{Identificador} & \textbf{Plataforma} & \textbf{Zona / VLAN} \\
+\midrule
+Servidor de procesamiento 1 & APP-SRV-01 & Linux RHEL 8 & CDE --- VLAN 100 \\
+Servidor de procesamiento 2 & APP-SRV-02 & Linux RHEL 8 & CDE --- VLAN 100 \\
+Servidor de procesamiento 3 & APP-SRV-03 & Linux RHEL 8 & CDE --- VLAN 100 \\
+Base de datos de tarjetas & DB-SRV-01 & SQL Server 2019 & CDE restringida --- VLAN 100 \\
+Terminal de operaci\'on 1--4 & POS-TRM-01 a 04 & Windows 10 & Operativa --- VLAN 200 \\
+Firewall perimetral CDE & FW-CDE-01 & Fortinet FortiGate 100F & Frontera CDE \\
+Switch de acceso CDE & SW-CDE-01 & Cisco Catalyst 2960 & CDE --- VLAN 100 \\
+Gateway VPN accesos remotos & VPN-GW-01 & (appliance perimetral) & Frontera externa \\
+\bottomrule
+\end{tabularx}
+
+\vspace{0.5em}
+\textbf{Fuera del alcance:} sistemas de RRHH, contabilidad, correo corporativo y otros activos no conectados al CDE.
+
+\textbf{Limitaciones declaradas:} la auditor\'ia se basa en evidencia recolectada durante el per\'iodo 01/05/2026--31/05/2026 mediante muestreo; no constituye una Evaluaci\'on QSA formal ni emite un RoC oficial ante el PCI SSC. Es un trabajo de naturaleza acad\'emica con metodolog\'ia profesional.
+
+\subsection{Metodolog\'ia}
+
+\begin{tabularx}{\textwidth}{P{3cm}P{6cm}L}
+\toprule
+\textbf{T\'ecnica} & \textbf{Descripci\'on} & \textbf{Aplicaci\'on} \\
+\midrule
+Entrevistas & Reuniones estructuradas con responsables de TI, Seguridad y RRHH. & Gerente de TI, Administrador de Red, Responsable de Seguridad, Jefe de RRHH. \\
+Revisi\'on documental & An\'alisis de pol\'iticas, diagramas de red, matrices de acceso, legajos, NDAs y tickets de cambio. & Pol\'iticas de seguridad, diagrama CDE, matriz de accesos, contratos de terceros. \\
+Pruebas t\'ecnicas & Inspecci\'on de configuraciones, reglas de firewall, listados de usuarios, escaneo de puertos, an\'alisis de logs. & FW-CDE-01, SW-CDE-01, APP/DB-SRV, VPN-GW-01. \\
+Observaci\'on directa & Verificaci\'on presencial de pr\'acticas y controles f\'isicos/l\'ogicos. & Sesiones de login, operaci\'on de POS, accesos de terceros. \\
+\bottomrule
+\end{tabularx}
+
+\vspace{0.5em}
+El enfoque es de riesgo: se prioriza la evaluaci\'on de los controles cuya falla tendr\'ia mayor impacto sobre la confidencialidad de los datos de tarjetahabientes (PAN, datos sensibles de autenticaci\'on).
+
+\subsection{Cronograma}
+
+\begin{tabularx}{\textwidth}{P{0.5cm}P{2.8cm}P{4.5cm}P{3cm}L}
+\toprule
+\textbf{D\'ia} & \textbf{Fecha} & \textbf{Actividad} & \textbf{T\'ecnica predominante} & \textbf{Responsable} \\
+\midrule
+1 & Lun 04/05/2026 & Reuni\'on de apertura, relevamiento general, recolecci\'on de documentaci\'on (pol\'iticas, diagrama CDE, matriz de accesos). & Entrevistas / Revisi\'on documental & Auditor L\'ider \\
+2 & Mar 05/05/2026 & OC-2: Revisi\'on de reglas de firewall, segmentaci\'on VLAN, escaneo de puertos, credenciales por defecto. & Pruebas t\'ecnicas & Auditor Senior \\
+3 & Mi\'e 06/05/2026 & OC-1: Verificaci\'on de cuentas, MFA, pol\'itica de contrase\~nas, matriz de accesos. & Pruebas t\'ecnicas / Observaci\'on & Auditor Senior / Junior \\
+4 & Jue 07/05/2026 & OC-1: An\'alisis de logs y retenci\'on. OC-3: Revisi\'on de legajos, NDAs internos y de terceros. & Revisi\'on documental / Pruebas t\'ecnicas & Auditor Junior \\
+5 & Vie 08/05/2026 & Consolidaci\'on de papeles de trabajo, elaboraci\'on de observaciones (NCCCE), reuni\'on de cierre. & An\'alisis / Entrevistas & Auditor L\'ider \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Equipo Auditor}
+
+\begin{tabularx}{\textwidth}{P{2.5cm}P{3.5cm}P{5cm}L}
+\toprule
+\textbf{Rol} & \textbf{Nombre} & \textbf{Responsabilidades} & \textbf{Certificaciones} \\
+\midrule
+Auditor L\'ider & Lic. Mariana Quiroga & Direcci\'on del encargo, relaci\'on con la Direcci\'on, revisi\'on de calidad, firma del informe. & CISA, PCI-DSS ISA \\
+Auditor Senior & Cr. Federico Bianchi & Ejecuci\'on de pruebas t\'ecnicas OC-1/OC-2, supervisi\'on del Junior, redacci\'on de hallazgos. & CISA, CEH \\
+Auditor Junior & Sr. Lucas Dom\'inguez & Revisi\'on documental, an\'alisis de logs, armado de papeles de trabajo OC-3. & En proceso de certificaci\'on \\
+\bottomrule
+\end{tabularx}
+
+\clearpage
+
+% ============================================================
+% ENTREGABLE 2 — CEAC Y NIVEL DE CONFIANZA
+% ============================================================
+\section{Entregable 2 --- Cuestionario de Evaluaci\'on del Ambiente de Control (CEAC) y Nivel de Confianza}
+
+El CEAC eval\'ua el ambiente de control mediante 15 preguntas distribuidas entre los tres OC, clasificadas por componente COSO 2013. La escala de respuesta es: S\'i = puntaje pleno, Parcial = 50\%, No = 0. La ponderaci\'on (1 a 3) refleja la criticidad de cada control. El puntaje obtenido = Ponderaci\'on $\times$ factor de respuesta (S\'i=1; Parcial=0,5; No=0).
+
+\begin{longtable}{P{0.5cm}P{2.8cm}P{4.5cm}P{1.2cm}P{1.5cm}P{1.5cm}L}
+\toprule
+\textbf{N\textdegree} & \textbf{Componente COSO} & \textbf{Pregunta de control} & \textbf{Resp.} & \textbf{Pond. (1--3)} & \textbf{Puntaje obt.} & \textbf{Observaci\'on} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{N\textdegree} & \textbf{Componente COSO} & \textbf{Pregunta de control} & \textbf{Resp.} & \textbf{Pond. (1--3)} & \textbf{Puntaje obt.} & \textbf{Observaci\'on} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+1 & Ambiente de Control & ¿Existe una pol\'itica de seguridad de la informaci\'on formalmente aprobada y vigente? & S\'i & 3 & 3,0 & Pol\'itica v4 aprobada 03/2026. \\
+2 & Ambiente de Control & ¿Todo el personal interno con acceso al CDE tiene NDA firmado y vigente? & S\'i & 3 & 3,0 & Verificado en PT-10. Control adecuado CA-04. \\
+3 & Ambiente de Control & ¿Los proveedores externos con acceso al CDE poseen NDA/cl\'ausula de confidencialidad firmada? & No & 3 & 0,0 & Mantenimiento S.R.L. sin NDA $\rightarrow$ OBS-07. \\
+4 & Ambiente de Control & ¿Existe un responsable formal de seguridad de la informaci\'on designado? & S\'i & 2 & 2,0 & Rol asignado al Gte. de TI. \\
+5 & Ambiente de Control & ¿Los legajos del personal con acceso al CDE est\'an completos y actualizados? & Parcial & 2 & 1,0 & Faltan registros de capacitaci\'on PCI. PT-09. \\
+6 & Evaluaci\'on de Riesgos & ¿Se realiza un an\'alisis de riesgos peri\'odico sobre el CDE? & Parcial & 3 & 1,5 & \'Ultimo an\'alisis 2024, desactualizado. \\
+7 & Evaluaci\'on de Riesgos & ¿Existe un proceso formal de gesti\'on de cambios con tickets para el CDE? & Parcial & 3 & 1,5 & Cambio en FW-CDE-01 sin ticket $\rightarrow$ anomal\'ia A-05. \\
+8 & Evaluaci\'on de Riesgos & ¿Se identifican y eliminan las configuraciones y credenciales por defecto? & No & 3 & 0,0 & sa/sa y admin/admin activos $\rightarrow$ OBS-01/02. \\
+9 & Evaluaci\'on de Riesgos & ¿Se eval\'ua el riesgo de accesos remotos al CDE (MFA)? & No & 3 & 0,0 & VPN sin MFA $\rightarrow$ OBS-04. \\
+10 & Actividades de Control & ¿El firewall aplica pol\'itica ``deny-all'' por defecto? & S\'i & 3 & 3,0 & Verificado PT-06. Control adecuado CA-01. \\
+11 & Actividades de Control & ¿La red est\'a segmentada (CDE aislado de otras zonas)? & S\'i & 3 & 3,0 & VLAN 100/200/300. CA-02. PT-05. \\
+12 & Actividades de Control & ¿Cada usuario del CDE tiene una cuenta individual (sin cuentas compartidas)? & No & 3 & 0,0 & Cuenta ``operador\_cde'' compartida $\rightarrow$ OBS-03. \\
+13 & Actividades de Control & ¿La pol\'itica de contrase\~nas cumple Req. 8.3 ($\geq$12 car., complejidad, expiraci\'on)? & Parcial & 2 & 1,0 & Cumple en APP-SRV-01/03; no uniforme. CA-03. \\
+14 & Actividades de Control & ¿Los logs de acceso se retienen al menos 12 meses (Req. 10.7)? & No & 3 & 0,0 & Retenci\'on de 90 d\'ias $\rightarrow$ OBS-05. \\
+15 & Actividades de Control & ¿Se han deshabilitado servicios/puertos inseguros (p. ej., Telnet)? & No & 2 & 0,0 & Telnet (23) activo en SW-CDE-01 $\rightarrow$ OBS-06. \\
+\end{longtable}
+
+\textbf{Puntaje m\'aximo posible} = 3+3+3+2+2+3+3+3+3+3+3+3+2+3+2 = \textbf{41 puntos}.
+
+\textbf{Puntaje obtenido} = 3,0+3,0+0,0+2,0+1,0+1,5+1,5+0,0+0,0+3,0+3,0+0,0+1,0+0,0+0,0 = \textbf{19,0 puntos}.
+
+\subsection{C\'alculo del Nivel de Confianza}
+
+\[
+NC = \frac{\text{Puntaje obtenido}}{\text{Puntaje m\'aximo posible}} \times 100 = \frac{19{,}0}{41} \times 100 = 46{,}34\%
+\]
+
+\textbf{Riesgo de control (complementario):} $RC = 100\% - NC = 53{,}66\%$
+
+\subsection{Escala de Nivel de Confianza}
+
+\begin{tabularx}{\textwidth}{P{3cm}P{2.5cm}P{3.5cm}L}
+\toprule
+\textbf{Nivel de Confianza} & \textbf{Rango} & \textbf{Riesgo de Control} & \textbf{Resultado} \\
+\midrule
+Bajo & 0\% -- 50\% & Alto & $\leftarrow$ \textbf{RESULTADO (46,34\%)} \\
+Moderado & 51\% -- 75\% & Medio & \\
+Alto & 76\% -- 100\% & Bajo & \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Conclusi\'on del CEAC}
+
+El ambiente de control de CardProcess S.A. presenta un Nivel de Confianza \textbf{BAJO} (46,34\%) y, en consecuencia, un Riesgo de Control \textbf{ALTO} (53,66\%). Si bien existen controles de red s\'olidos (firewall deny-all, segmentaci\'on, NDAs internos), las deficiencias en gesti\'on de credenciales por defecto, MFA, cuentas compartidas y retenci\'on de logs deterioran significativamente la confianza. Esto justifica una estrategia de auditor\'ia sustantiva ampliada y una remediaci\'on priorizada.
+
+\clearpage
+
+% ============================================================
+% ENTREGABLE 3 — DIAGRAMA DEL CDE Y FLUJO DE DATOS
+% ============================================================
+\section{Entregable 3 --- Diagrama del CDE y Flujo de Datos}
+
+El CDE de CardProcess S.A. se estructura en tres zonas l\'ogicas separadas por VLAN y mediadas por el firewall FW-CDE-01 (Fortinet FortiGate 100F), que controla todo el tr\'afico inter-zona bajo pol\'itica ``deny-all''.
+
+\subsection{Arquitectura del CDE}
+
+\begin{tabularx}{\textwidth}{P{2.8cm}P{1.5cm}P{3.5cm}P{3cm}L}
+\toprule
+\textbf{Capa / Zona} & \textbf{VLAN} & \textbf{Componentes} & \textbf{Funci\'on} & \textbf{Rango de red} \\
+\midrule
+Frontera externa & --- & VPN-GW-01, FW-CDE-01 (interfaz WAN) & Punto \'unico de ingreso remoto y filtrado perimetral. & IP p\'ublica / 200.x \\
+Zona CDE & VLAN 100 & APP-SRV-01/02/03, SW-CDE-01 & Procesamiento de transacciones. & 10.10.10.0/24 \\
+Zona CDE restringida & VLAN 100 (sub-segmento) & DB-SRV-01 & Almacenamiento cifrado del PAN. Acceso solo desde APP-SRV. & 10.10.10.50/32 \\
+Zona Operativa & VLAN 200 & POS-TRM-01 a 04 & Operaci\'on y monitoreo por personal interno. & 192.168.20.0/24 \\
+Zona Administraci\'on & VLAN 300 & Estaciones de administraci\'on de red/sistemas & Gesti\'on de FW, switch y servidores. & 172.16.30.0/24 \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Flujos de Datos}
+
+\begin{tabularx}{\textwidth}{P{0.4cm}P{2.3cm}P{2.3cm}P{2cm}P{0.8cm}P{2.2cm}P{1cm}L}
+\toprule
+\textbf{\#} & \textbf{Origen} & \textbf{Destino} & \textbf{Protocolo} & \textbf{Puerto} & \textbf{Tipo de dato} & \textbf{Cifrado} & \textbf{Observaci\'on} \\
+\midrule
+F1 & Banco emisor (externo) & FW-CDE-01 $\rightarrow$ APP-SRV-01 & HTTPS / TLS 1.2 & 443 & PAN + datos de transacci\'on & S\'i (TLS) & Ingreso autorizado por regla expl\'icita. \\
+F2 & APP-SRV-01/02/03 & DB-SRV-01 & TDS sobre TLS & 1433 & PAN (almacenado cifrado) & S\'i & Acceso restringido a VLAN 100. \\
+F3 & DB-SRV-01 & APP-SRV (respuesta) & TDS sobre TLS & 1433 & PAN truncado / token & S\'i & Solo respuesta a consulta autorizada. \\
+F4 & POS-TRM (VLAN 200) & APP-SRV-03 & HTTPS / TLS 1.2 & 443 & PAN enmascarado en pantalla & S\'i & Operadores ven solo \'ultimos 4 d\'igitos. \\
+F5 & VPN-GW-01 (remoto) & APP-SRV-02 (administraci\'on) & SSH & 22 & Configuraci\'on (sin CHD) & S\'i & Sin MFA $\rightarrow$ OBS-04. \\
+F6 & APP-SRV / DB-SRV & Servidor de logs (VLAN 300) & Syslog/TLS & 6514 & Eventos de seguridad & S\'i & Retenci\'on solo 90 d\'ias $\rightarrow$ OBS-05. \\
+F7 (an\'omalo) & DB-SRV-01 & IP externa 185.220.101.45 & HTTPS/SFTP & 443/22 & Archivo .csv (45 MB, posible PAN) & --- & Exfiltraci\'on sospechada $\rightarrow$ anomal\'ia A-06. \\
+\bottomrule
+\end{tabularx}
+
+\vspace{0.5em}
+\begin{quote}
+\textbf{Nota sobre CVV/datos sensibles de autenticaci\'on:} Conforme Req. 3.2, los datos sensibles de autenticaci\'on (CVV/CVV2, PIN, banda magn\'etica completa) no deben almacenarse tras la autorizaci\'on. Se verific\'o que DB-SRV-01 no almacena CVV; \'unicamente el PAN cifrado. El CVV transita en F1 (autorizaci\'on) y se descarta.
+\end{quote}
+
+\subsection{Controles por Frontera}
+
+\begin{tabularx}{\textwidth}{P{4cm}P{6cm}L}
+\toprule
+\textbf{Frontera} & \textbf{Control implementado} & \textbf{Estado} \\
+\midrule
+Externa $\rightarrow$ CDE (FW-CDE-01) & Pol\'itica deny-all + reglas expl\'icitas; inspecci\'on stateful. & Adecuado (CA-01). \\
+CDE $\leftrightarrow$ Operativa (VLAN 100/200) & Segmentaci\'on VLAN; ACL en SW-CDE-01. & Adecuado (CA-02), salvo Telnet abierto (OBS-06). \\
+CDE $\leftrightarrow$ Administraci\'on (VLAN 300) & Tr\'afico de gesti\'on segregado; SSH. & Parcial --- falta MFA en acceso remoto. \\
+CDE restringida (DB-SRV-01) & Acceso solo desde APP-SRV; cifrado en reposo. & Comprometido por credencial sa/sa (OBS-01). \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Leyenda}
+
+\begin{tabularx}{\textwidth}{P{2cm}L}
+\toprule
+\textbf{Sigla} & \textbf{Significado} \\
+\midrule
+CDE & Cardholder Data Environment (Entorno de Datos de Tarjetahabientes) \\
+PAN & Primary Account Number (N\'umero de cuenta principal de la tarjeta) \\
+CHD & Cardholder Data (Datos de tarjetahabiente) \\
+CVV & Card Verification Value (dato sensible de autenticaci\'on) \\
+MFA & Multi-Factor Authentication (Autenticaci\'on multifactor) \\
+VLAN & Virtual Local Area Network (Red de \'area local virtual) \\
+TDS & Tabular Data Stream (protocolo de SQL Server) \\
+FW & Firewall \\
+\bottomrule
+\end{tabularx}
+
+\clearpage
+
+% ============================================================
+% ENTREGABLE 4 — REGISTRO DE LOGS CON ANOMALÍAS
+% ============================================================
+\section{Entregable 4 --- Registro de Logs con Anomal\'ias}
+
+\begin{longtable}{P{2cm}P{2.2cm}P{2.5cm}P{2.5cm}P{2.5cm}P{1.5cm}L}
+\toprule
+\textbf{Fecha/Hora} & \textbf{Usuario} & \textbf{IP Origen} & \textbf{Dispositivo Destino} & \textbf{Acci\'on} & \textbf{Resultado} & \textbf{Anomal\'ia} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Fecha/Hora} & \textbf{Usuario} & \textbf{IP Origen} & \textbf{Dispositivo Destino} & \textbf{Acci\'on} & \textbf{Resultado} & \textbf{Anomal\'ia} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+02/05 08:14 & mquiroga & 172.16.30.12 & APP-SRV-01 & Login SSH & \'Exito & No \\
+02/05 09:02 & jperez & 192.168.20.21 & APP-SRV-03 & Login app & \'Exito & No \\
+03/05 10:31 & fbianchi & 172.16.30.15 & FW-CDE-01 & Consulta reglas & \'Exito & No \\
+04/05 11:45 & jperez & 192.168.20.21 & APP-SRV-03 & Consulta tx & \'Exito & No \\
+05/05 03:47 & admin & 185.143.223.7 & APP-SRV-02 & Login SSH & \'Exito & S\'i (A-02) \\
+05/05 08:10 & \texttt{operador\_cde} & 192.168.20.22 & APP-SRV-03 & Login app & \'Exito & S\'i (A-03) \\
+06/05 09:20 & \texttt{operador\_cde} & 192.168.20.23 & APP-SRV-03 & Login app & \'Exito & S\'i (A-03) \\
+06/05 14:05 & sa & 10.10.10.30 & DB-SRV-01 & Login SQL & \'Exito & S\'i (A-01) \\
+07/05 22:11 & desconocido & 185.220.101.45 & VPN-GW-01 & Login VPN & \'Exito & S\'i (A-04) \\
+08/05 02:33 & (n/a) & 203.0.113.88 & APP-SRV-01 & Login SSH & Fallo & S\'i (A-03b) \\
+08/05 02:33 & (n/a) & 203.0.113.88 & APP-SRV-01 & Login SSH & Fallo & S\'i (A-03b) \\
+08/05 02:34 & root & 203.0.113.88 & APP-SRV-01 & Login SSH & Fallo & S\'i (A-03b) \\
+08/05 02:34 & root & 203.0.113.88 & APP-SRV-01 & Login SSH & Fallo & S\'i (A-03b) \\
+08/05 02:35 & admin & 203.0.113.88 & APP-SRV-01 & Login SSH & Fallo & S\'i (A-03b) \\
+08/05 02:35 & admin & 203.0.113.88 & APP-SRV-01 & Login SSH & Fallo ($\times$12 total) & S\'i (A-05 fuerza bruta) \\
+09/05 09:00 & mquiroga & 172.16.30.12 & APP-SRV-01 & Login SSH & \'Exito & No \\
+10/05 16:42 & \texttt{tecnico\_ext1} & 172.16.30.40 & APP-SRV-02 & Login SSH & \'Exito & S\'i (A-07 sin NDA) \\
+11/05 11:15 & jperez & 192.168.20.21 & APP-SRV-03 & Consulta tx & \'Exito & No \\
+12/05 13:50 & fbianchi & 172.16.30.15 & SW-CDE-01 & Login Telnet (23) & \'Exito & S\'i (A-08 Telnet) \\
+13/05 10:05 & ldominguez & 172.16.30.18 & DB-SRV-01 & Consulta SQL & \'Exito & No \\
+14/05 17:20 & sa & 10.10.10.31 & DB-SRV-01 & Export datos & \'Exito & S\'i (A-06) \\
+14/05 17:22 & sa & 10.10.10.31 & DB-SRV-01 & Transfer .csv 45MB $\rightarrow$ 185.220.101.45 & \'Exito & S\'i (A-06 exfiltraci\'on) \\
+15/05 08:30 & jperez & 192.168.20.21 & APP-SRV-03 & Login app & \'Exito & No \\
+16/05 04:18 & admin & 200.45.12.9 & FW-CDE-01 & Cambio config (regla NAT) & \'Exito & S\'i (A-09 sin ticket) \\
+17/05 09:45 & mquiroga & 172.16.30.12 & APP-SRV-01 & Login SSH & \'Exito & No \\
+18/05 10:30 & \texttt{operador\_cde} & 192.168.20.24 & APP-SRV-03 & Login app & \'Exito & S\'i (A-03) \\
+19/05 12:00 & \texttt{tecnico\_ext2} & 172.16.30.41 & APP-SRV-02 & Login SSH & \'Exito & S\'i (A-07 sin NDA) \\
+20/05 15:10 & jperez & 192.168.20.21 & APP-SRV-03 & Consulta tx & \'Exito & No \\
+21/05 08:05 & ldominguez & 172.16.30.18 & DB-SRV-01 & Consulta SQL & \'Exito & No \\
+22/05 23:55 & sa & 91.219.236.18 & DB-SRV-01 & Login SQL & Fallo & S\'i (A-01b) \\
+\end{longtable}
+
+\subsection{An\'alisis de Anomal\'ias}
+
+\begin{tabularx}{\textwidth}{P{1.2cm}P{3.5cm}P{3cm}P{1.5cm}L}
+\toprule
+\textbf{ID} & \textbf{Descripci\'on} & \textbf{Requisito PCI-DSS afectado} & \textbf{Riesgo (A/M/B)} & \textbf{Acci\'on recomendada} \\
+\midrule
+A-01 & Login exitoso a DB-SRV-01 con usuario por defecto ``sa'' (credencial sa/sa). & Req. 2.1 / Req. 8.2.1 & Alto & Deshabilitar/renombrar ``sa'', asignar contrase\~na robusta \'unica, usar cuentas nominales. \\
+A-02 & Acceso a APP-SRV-02 a las 03:47 AM desde IP externa con usuario ``admin''. & Req. 2.1 / Req. 8.6 & Alto & Investigar acceso, restringir login a horario/origen, eliminar cuenta por defecto. \\
+A-03 & Uso de cuenta compartida ``\texttt{operador\_cde}'' por m\'ultiples IP/usuarios. & Req. 8.2.1 & Alto & Crear cuentas individuales por operador; eliminar cuenta gen\'erica. \\
+A-03b/A-05 & 12 intentos fallidos consecutivos en APP-SRV-01 (fuerza bruta). & Req. 8.3.4 (bloqueo) / Req. 10.6 & Alto & Configurar bloqueo tras 6 intentos; alertar al SOC; revisar fail2ban. \\
+A-04 & Acceso VPN exitoso desde 185.220.101.45 (nodo de salida Tor) no registrado. & Req. 1.3 / Req. 8.4.2 (MFA) & Cr\'itico & Implementar MFA, geo-bloqueo, lista blanca de or\'igenes VPN. \\
+A-06 & Exportaci\'on y transferencia de .csv de 45 MB desde DB-SRV-01 a IP externa. & Req. 10.6 / Req. 1.3.2 (egress) & Cr\'itico & Bloquear egress no autorizado, DLP, investigar posible fuga de PAN. \\
+A-07 & Accesos de \texttt{tecnico\_ext1}/\texttt{ext2} (proveedor) al CDE sin NDA firmado. & Req. 12.8.3 & Alto & Suspender accesos hasta NDA firmado; registrar y supervisar. \\
+A-08 & Login por Telnet (puerto 23, texto plano) a SW-CDE-01. & Req. 2.2.1 / Req. 2.2.5 & Medio & Deshabilitar Telnet; usar exclusivamente SSH. \\
+A-09 & Cambio de configuraci\'on (regla NAT) en FW-CDE-01 sin ticket de cambio. & Req. 1.2.1 / Req. 6.5.1 (gesti\'on de cambios) & Medio & Exigir ticket previo; revisar regla creada; control de cambios. \\
+\bottomrule
+\end{tabularx}
+
+\clearpage
+
+% ============================================================
+% ENTREGABLE 5 — PLAN Y PROGRAMA DE AUDITORÍA POR OC
+% ============================================================
+\section{Entregable 5 --- Plan y Programa de Auditor\'ia por OC}
+
+\subsection{OC-1 --- Plan}
+
+\begin{tabularx}{\textwidth}{P{1.5cm}P{4cm}P{4cm}L}
+\toprule
+\textbf{OC} & \textbf{Objetivo} & \textbf{Riesgo identificado} & \textbf{Criterio de evaluaci\'on (PCI-DSS)} \\
+\midrule
+OC-1 & Verificar restricci\'on de acceso, identificaci\'on \'unica, autenticaci\'on robusta y trazabilidad. & Accesos no controlados al CHD; cuentas compartidas; falta de MFA; logs insuficientes. & Req. 7.2, 8.2.1, 8.3, 8.4.2, 10.7 \\
+\bottomrule
+\end{tabularx}
+
+\subsection{OC-1 --- Programa}
+
+\begin{tabularx}{\textwidth}{P{1cm}P{4cm}P{2.5cm}P{2cm}P{1.5cm}L}
+\toprule
+\textbf{N\textdegree} & \textbf{Descripci\'on de la prueba} & \textbf{T\'ecnica} & \textbf{Responsable} & \textbf{Fecha plan.} & \textbf{Ref. PT} \\
+\midrule
+P-1.1 & Revisar matriz de accesos al CDE y necesidad de saber. & Rev. documental & Bianchi & 06/05 & PT-01 \\
+P-1.2 & Verificar que cada usuario tenga cuenta individual. & Prueba t\'ecnica & Bianchi & 06/05 & PT-02 \\
+P-1.3 & Verificar MFA en accesos remotos VPN. & Prueba t\'ecnica & Bianchi & 06/05 & PT-03 \\
+P-1.4 & Revisar pol\'itica de contrase\~nas en servidores CDE. & Prueba t\'ecnica & Dom\'inguez & 06/05 & PT-04 \\
+P-1.5 & Revisar configuraci\'on de retenci\'on de logs. & Prueba t\'ecnica & Dom\'inguez & 07/05 & PT-12 \\
+\bottomrule
+\end{tabularx}
+
+\subsection{OC-2 --- Plan}
+
+\begin{tabularx}{\textwidth}{P{1.5cm}P{4cm}P{4cm}L}
+\toprule
+\textbf{OC} & \textbf{Objetivo} & \textbf{Riesgo identificado} & \textbf{Criterio de evaluaci\'on (PCI-DSS)} \\
+\midrule
+OC-2 & Verificar controles de red, segmentaci\'on, reglas de firewall y eliminaci\'on de configuraciones/credenciales por defecto. & Exposici\'on del CDE; credenciales por defecto; puertos inseguros. & Req. 1.2.1, 1.3, 2.1, 2.2.1 \\
+\bottomrule
+\end{tabularx}
+
+\subsection{OC-2 --- Programa}
+
+\begin{tabularx}{\textwidth}{P{1cm}P{4cm}P{2.5cm}P{2cm}P{1.5cm}L}
+\toprule
+\textbf{N\textdegree} & \textbf{Descripci\'on de la prueba} & \textbf{T\'ecnica} & \textbf{Responsable} & \textbf{Fecha plan.} & \textbf{Ref. PT} \\
+\midrule
+P-2.1 & Revisar diagrama de red y segmentaci\'on del CDE. & Rev. documental & Bianchi & 05/05 & PT-05 \\
+P-2.2 & Revisar reglas del firewall FW-CDE-01 (deny-all). & Prueba t\'ecnica & Bianchi & 05/05 & PT-06 \\
+P-2.3 & Verificar credenciales por defecto en dispositivos CDE. & Prueba t\'ecnica & Bianchi & 05/05 & PT-07 \\
+P-2.4 & Escanear puertos y servicios abiertos. & Prueba t\'ecnica & Dom\'inguez & 05/05 & PT-08 \\
+\bottomrule
+\end{tabularx}
+
+\subsection{OC-3 --- Plan}
+
+\begin{tabularx}{\textwidth}{P{1.5cm}P{4cm}P{4cm}L}
+\toprule
+\textbf{OC} & \textbf{Objetivo} & \textbf{Riesgo identificado} & \textbf{Criterio de evaluaci\'on} \\
+\midrule
+OC-3 & Verificar tratamiento formal de personal interno y terceros con acceso al CDE. & Personal/terceros sin acuerdos de confidencialidad; legajos incompletos. & Req. 12.1, 12.8.3; ISO 27002:2022 Control 6.6 \\
+\bottomrule
+\end{tabularx}
+
+\subsection{OC-3 --- Programa}
+
+\begin{tabularx}{\textwidth}{P{1cm}P{4cm}P{2.5cm}P{2cm}P{1.5cm}L}
+\toprule
+\textbf{N\textdegree} & \textbf{Descripci\'on de la prueba} & \textbf{T\'ecnica} & \textbf{Responsable} & \textbf{Fecha plan.} & \textbf{Ref. PT} \\
+\midrule
+P-3.1 & Revisar legajos del personal con acceso CDE. & Rev. documental & Dom\'inguez & 07/05 & PT-09 \\
+P-3.2 & Verificar NDAs del personal interno. & Rev. documental & Dom\'inguez & 07/05 & PT-10 \\
+P-3.3 & Verificar NDAs de proveedores externos. & Rev. documental / Entrevista & Dom\'inguez & 07/05 & PT-11 \\
+\bottomrule
+\end{tabularx}
+
+\clearpage
+
+% ============================================================
+% ENTREGABLE 6 — PAPELES DE TRABAJO
+% ============================================================
+\section{Entregable 6 --- Papeles de Trabajo}
+
+% ---- PT-01 ----
+\subsection{PT-01: Revisi\'on de Matriz de Accesos al CDE}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Detalle} \\
+\midrule
+OC & OC-1 \\
+Objetivo & Verificar que los accesos al CDE est\'en asignados seg\'un necesidad de saber y por rol. \\
+Requisito PCI-DSS & Req. 7.2 (Restricci\'on de acceso basada en necesidad de saber y funci\'on laboral) \\
+Procedimiento aplicado & Solicitud y an\'alisis de la matriz de accesos (RBAC); cruce con organigrama y funciones. \\
+Evidencia obtenida & Matriz ``Accesos\_CDE\_2026.xlsx'' con 14 usuarios. Roles: 3 administradores (mquiroga, fbianchi, sysadmin), 8 operadores, 3 cuentas t\'ecnicas. Hallazgo: la cuenta ``\texttt{operador\_cde}'' figura asignada a 3 personas (J. P\'erez, M. Sosa, R. G\'omez); existe regla ``deny-all'' base correcta en FW. La matriz no registra fecha de \'ultima revisi\'on de privilegios. \\
+Resultado & No Conforme (parcial: existe matriz, pero con cuenta compartida y sin revisi\'on peri\'odica). \\
+Observaci\'on & PT-OBS $\rightarrow$ OBS-03 \\
+Auditor & Cr. Federico Bianchi \\
+Fecha & 06/05/2026 \\
+\bottomrule
+\end{tabularx}
+
+% ---- PT-02 ----
+\subsection{PT-02: Verificaci\'on de Cuentas Individuales}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Detalle} \\
+\midrule
+OC & OC-1 \\
+Objetivo & Confirmar que cada usuario posee identificador \'unico, sin cuentas compartidas. \\
+Requisito PCI-DSS & Req. 8.2.1 (Asignaci\'on de ID \'unico a cada usuario antes de otorgar acceso) \\
+Procedimiento aplicado & Listado de cuentas locales y de aplicaci\'on en APP-SRV-01/02/03; entrevista a operadores. \\
+Evidencia obtenida & Extracto \texttt{/etc/passwd} (APP-SRV-03): \texttt{operador\_cde:x:1502:1502:Operador CDE compartido:/home/operador\_cde:/bin/bash}. Entrevista: ``Los tres operadores del turno usan la misma cuenta \texttt{operador\_cde} porque es m\'as pr\'actico'' (J. P\'erez, operador). Logs confirman uso desde IP 192.168.20.22, .23 y .24. \\
+Resultado & No Conforme \\
+Observaci\'on & PT-OBS $\rightarrow$ OBS-03 \\
+Auditor & Cr. Federico Bianchi \\
+Fecha & 06/05/2026 \\
+\bottomrule
+\end{tabularx}
+
+% ---- PT-03 ----
+\subsection{PT-03: Verificaci\'on de MFA en Accesos Remotos}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Detalle} \\
+\midrule
+OC & OC-1 \\
+Objetivo & Verificar que los accesos remotos al CDE utilicen autenticaci\'on multifactor. \\
+Requisito PCI-DSS & Req. 8.4.2 (MFA para todo acceso al CDE) y 8.5.1 \\
+Procedimiento aplicado & Inspecci\'on de configuraci\'on de VPN-GW-01; prueba de conexi\'on remota controlada. \\
+Evidencia obtenida & Configuraci\'on VPN-GW-01: \texttt{auth-method = local-password}; \texttt{mfa = disabled}. Prueba de login remoto exitosa solo con usuario/contrase\~na, sin segundo factor. Log A-04 muestra acceso VPN desde 185.220.101.45 sin MFA. Entrevista al Administrador de Red: ``El MFA est\'a en el roadmap pero a\'un no se implement\'o''. \\
+Resultado & No Conforme \\
+Observaci\'on & PT-OBS $\rightarrow$ OBS-04 \\
+Auditor & Cr. Federico Bianchi \\
+Fecha & 06/05/2026 \\
+\bottomrule
+\end{tabularx}
+
+% ---- PT-04 ----
+\subsection{PT-04: Revisi\'on de Pol\'itica de Contrase\~nas}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Detalle} \\
+\midrule
+OC & OC-1 \\
+Objetivo & Verificar que la pol\'itica de contrase\~nas cumpla los par\'ametros m\'inimos. \\
+Requisito PCI-DSS & Req. 8.3.6 (m\'inimo 12 caracteres, alfanum\'erica) y 8.3.9 (rotaci\'on) \\
+Procedimiento aplicado & Inspecci\'on de \texttt{/etc/security/pwquality.conf} y \texttt{chage}; revisi\'on de GPO/pol\'iticas. \\
+Evidencia obtenida & APP-SRV-01 y APP-SRV-03: \texttt{minlen=12}; \texttt{minclass=3}; \texttt{maxdays=90}. Conforme. APP-SRV-02: \texttt{minlen=8}; \texttt{maxdays=0} (sin expiraci\'on) --- m\'as d\'ebil. DB-SRV-01: pol\'itica SQL con ``Enforce password policy'' deshabilitado para ``sa''. \\
+Resultado & Conforme en APP-SRV-01/03 (sustenta CA-03); No Conforme en APP-SRV-02 y DB-SRV-01. \\
+Observaci\'on & PT-OBS $\rightarrow$ OBS-01, OBS-02 (relacionado) \\
+Auditor & Sr. Lucas Dom\'inguez \\
+Fecha & 06/05/2026 \\
+\bottomrule
+\end{tabularx}
+
+% ---- PT-05 ----
+\subsection{PT-05: Revisi\'on del Diagrama de Red del CDE}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Detalle} \\
+\midrule
+OC & OC-2 \\
+Objetivo & Verificar la existencia y exactitud del diagrama de red y la segmentaci\'on del CDE. \\
+Requisito PCI-DSS & Req. 1.2.1 (diagrama de red actualizado que identifique conexiones del CDE) \\
+Procedimiento aplicado & Revisi\'on del diagrama ``Topologia\_CDE\_v3.vsdx'' (fecha 02/2026); cotejo con configuraci\'on real de VLAN en SW-CDE-01. \\
+Evidencia obtenida & Diagrama presente y fechado 02/2026. VLAN 100 (CDE), 200 (operativa), 300 (administraci\'on) coinciden con ``show vlan brief'' del switch. El diagrama identifica flujos de CHD. Refleja correctamente FW-CDE-01 como frontera. \\
+Resultado & Conforme \\
+Observaci\'on & --- (sustenta CA-02) \\
+Auditor & Cr. Federico Bianchi \\
+Fecha & 05/05/2026 \\
+\bottomrule
+\end{tabularx}
+
+% ---- PT-06 ----
+\subsection{PT-06: Revisi\'on de Reglas del Firewall FW-CDE-01}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Detalle} \\
+\midrule
+OC & OC-2 \\
+Objetivo & Verificar que el firewall aplique pol\'itica restrictiva por defecto con reglas expl\'icitas. \\
+Requisito PCI-DSS & Req. 1.3 (restricci\'on de tr\'afico hacia/desde el CDE) y 1.3.2 (deny por defecto) \\
+Procedimiento aplicado & Exportaci\'on del rule-set de FW-CDE-01; an\'alisis de regla impl\'icita final. \\
+Evidencia obtenida & Pol\'itica impl\'icita final: Deny ALL (log habilitado). Reglas expl\'icitas: (1) Allow 443 from BancoEmisor to APP-SRV-01; (2) Allow 1433 from APP-SRV-* to DB-SRV-01; (3) Allow 22 from VLAN300 to APP-SRV-*. Hallazgo secundario: existe regla NAT agregada el 16/05 (log A-09) sin ticket de cambio asociado. \\
+Resultado & Conforme respecto del deny-all (sustenta CA-01); observaci\'on de gesti\'on de cambios en regla NAT. \\
+Observaci\'on & --- (CA-01); nota a OBS de control de cambios \\
+Auditor & Cr. Federico Bianchi \\
+Fecha & 05/05/2026 \\
+\bottomrule
+\end{tabularx}
+
+% ---- PT-07 ----
+\subsection{PT-07: Verificaci\'on de Credenciales por Defecto en Dispositivos CDE}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Detalle} \\
+\midrule
+OC & OC-2 \\
+Objetivo & Verificar la eliminaci\'on/cambio de credenciales y cuentas por defecto del proveedor. \\
+Requisito PCI-DSS & Req. 2.1 (cambiar defaults del proveedor antes de instalar en la red) \\
+Procedimiento aplicado & Pruebas de autenticaci\'on controladas con credenciales por defecto; revisi\'on de cuentas. \\
+Evidencia obtenida & DB-SRV-01 (SQL Server 2019): login exitoso con sa/sa (autenticado, confirmado por log A-01). APP-SRV-02 (RHEL 8): login exitoso con admin/admin. APP-SRV-01 y APP-SRV-03: credenciales por defecto eliminadas (conforme). FW-CDE-01 y SW-CDE-01: cuenta admin con contrase\~na personalizada. \\
+Resultado & No Conforme (DB-SRV-01 y APP-SRV-02). \\
+Observaci\'on & PT-OBS $\rightarrow$ OBS-01, OBS-02 \\
+Auditor & Cr. Federico Bianchi \\
+Fecha & 05/05/2026 \\
+\bottomrule
+\end{tabularx}
+
+% ---- PT-08 ----
+\subsection{PT-08: Revisi\'on de Puertos y Servicios Abiertos}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Detalle} \\
+\midrule
+OC & OC-2 \\
+Objetivo & Identificar puertos/servicios innecesarios o inseguros en componentes del CDE. \\
+Requisito PCI-DSS & Req. 2.2.1 / 2.2.5 (solo servicios necesarios; deshabilitar inseguros) \\
+Procedimiento aplicado & Escaneo de puertos (nmap controlado) sobre SW-CDE-01 y servidores; revisi\'on de servicios. \\
+Evidencia obtenida & nmap SW-CDE-01: \texttt{23/tcp open telnet}, \texttt{22/tcp open ssh}. Telnet (texto plano) habilitado junto a SSH. Log A-08 confirma login Telnet. Servidores APP/DB: solo puertos esperados (22, 443, 1433). \\
+Resultado & No Conforme (SW-CDE-01 con Telnet activo). \\
+Observaci\'on & PT-OBS $\rightarrow$ OBS-06 \\
+Auditor & Sr. Lucas Dom\'inguez \\
+Fecha & 05/05/2026 \\
+\bottomrule
+\end{tabularx}
+
+% ---- PT-09 ----
+\subsection{PT-09: Revisi\'on de Legajos de Personal con Acceso CDE}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Detalle} \\
+\midrule
+OC & OC-3 \\
+Objetivo & Verificar que los legajos del personal con acceso al CDE est\'en completos. \\
+Requisito PCI-DSS & Req. 12.1 (pol\'itica de seguridad) y 12.6 (concientizaci\'on) \\
+Procedimiento aplicado & Muestreo de 8 legajos de personal con acceso al CDE; revisi\'on de contenido. \\
+Evidencia obtenida & 8/8 legajos contienen contrato y descripci\'on de puesto. 6/8 carecen de constancia de capacitaci\'on PCI-DSS del \'ultimo a\~no (Req. 12.6.3). Todos poseen NDA (ver PT-10). \\
+Resultado & No Conforme parcial (falta evidencia de capacitaci\'on). \\
+Observaci\'on & Nota de gesti\'on (concientizaci\'on) \\
+Auditor & Sr. Lucas Dom\'inguez \\
+Fecha & 07/05/2026 \\
+\bottomrule
+\end{tabularx}
+
+% ---- PT-10 ----
+\subsection{PT-10: Verificaci\'on de NDAs del Personal Interno}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Detalle} \\
+\midrule
+OC & OC-3 \\
+Objetivo & Verificar que todo el personal interno con acceso al CDE tenga NDA firmado y vigente. \\
+Requisito PCI-DSS / ISO & ISO/IEC 27002:2022 Control 6.6 (Acuerdos de confidencialidad); Req. 12.8 (relaci\'on) \\
+Procedimiento aplicado & Cotejo de listado de 11 empleados con acceso al CDE contra NDAs archivados en RRHH. \\
+Evidencia obtenida & 11/11 empleados internos poseen NDA firmado y vigente (firmas entre 2024 y 2026, cl\'ausula de confidencialidad sobre CHD). Constancias en legajo digital. \\
+Resultado & Conforme \\
+Observaci\'on & --- (sustenta CA-04) \\
+Auditor & Sr. Lucas Dom\'inguez \\
+Fecha & 07/05/2026 \\
+\bottomrule
+\end{tabularx}
+
+% ---- PT-11 ----
+\subsection{PT-11: Verificaci\'on de NDAs de Proveedores Externos}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Detalle} \\
+\midrule
+OC & OC-3 \\
+Objetivo & Verificar que los proveedores con acceso al CDE tengan acuerdos de confidencialidad. \\
+Requisito PCI-DSS & Req. 12.8.3 (proceso de compromiso con proveedores con acceso al CHD) y 12.8.2 \\
+Procedimiento aplicado & Revisi\'on del contrato con Mantenimiento S.R.L.; entrevista a RRHH y a Compras. \\
+Evidencia obtenida & Contrato de servicios de mantenimiento vigente, sin cl\'ausula de confidencialidad/NDA espec\'ifica sobre datos de tarjetahabientes. Los t\'ecnicos \texttt{tecnico\_ext1} y \texttt{tecnico\_ext2} acceden al CDE (logs A-07) sin NDA firmado. RRHH: ``El NDA con el proveedor nunca se gestion\'o''. \\
+Resultado & No Conforme \\
+Observaci\'on & PT-OBS $\rightarrow$ OBS-07 \\
+Auditor & Sr. Lucas Dom\'inguez \\
+Fecha & 07/05/2026 \\
+\bottomrule
+\end{tabularx}
+
+% ---- PT-12 ----
+\subsection{PT-12: Revisi\'on de Retenci\'on de Logs}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Detalle} \\
+\midrule
+OC & OC-1 \\
+Objetivo & Verificar que los logs de actividad del CDE se retengan el per\'iodo m\'inimo exigido. \\
+Requisito PCI-DSS & Req. 10.7 (retenci\'on de al menos 12 meses, 3 disponibles inmediatamente) \\
+Procedimiento aplicado & Revisi\'on de la pol\'itica de retenci\'on y de la configuraci\'on del servidor de logs (VLAN 300). \\
+Evidencia obtenida & Configuraci\'on del servidor syslog: \texttt{retention = 90 days}; rotate + purge. Logs anteriores a 90 d\'ias eliminados autom\'aticamente. Pol\'itica documentada indica ``90 d\'ias'' como objetivo. Confirmado: no existe respaldo hist\'orico de 12 meses. \\
+Resultado & No Conforme \\
+Observaci\'on & PT-OBS $\rightarrow$ OBS-05 \\
+Auditor & Sr. Lucas Dom\'inguez \\
+Fecha & 07/05/2026 \\
+\bottomrule
+\end{tabularx}
+
+\subsection{PT-OBS --- \'Indice de Papeles de Observaci\'on}
+
+\begin{tabularx}{\textwidth}{P{2.5cm}P{5cm}P{3cm}L}
+\toprule
+\textbf{PT-OBS} & \textbf{Hallazgo asociado} & \textbf{Origen PT} & \textbf{Severidad} \\
+\midrule
+PT-OBS-01 & Credencial por defecto sa/sa en DB-SRV-01 & PT-07 & Cr\'itico \\
+PT-OBS-02 & Credencial por defecto admin/admin en APP-SRV-02 & PT-07 & Cr\'itico \\
+PT-OBS-03 & Cuenta compartida ``\texttt{operador\_cde}'' & PT-01, PT-02 & Alto \\
+PT-OBS-04 & Ausencia de MFA en VPN & PT-03 & Alto \\
+PT-OBS-05 & Retenci\'on de logs de 90 d\'ias & PT-12 & Alto \\
+PT-OBS-06 & Telnet activo en SW-CDE-01 & PT-08 & Medio \\
+PT-OBS-07 & T\'ecnicos de proveedor sin NDA & PT-11 & Alto \\
+\bottomrule
+\end{tabularx}
+
+\clearpage
+
+% ============================================================
+% ENTREGABLE 7 — OBSERVACIONES NCCCE
+% ============================================================
+\section{Entregable 7 --- Observaciones NCCCE}
+
+% ---- OBS-01 ----
+\subsection{OBS-01: Credenciales por Defecto en DB-SRV-01}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Contenido} \\
+\midrule
+OC & OC-2 \\
+Naturaleza & Deficiencia de control / Incumplimiento normativo \\
+Condici\'on & El usuario administrador ``sa'' de SQL Server 2019 en DB-SRV-01 mantiene la contrase\~na por defecto del proveedor (sa), con la cual se logr\'o autenticaci\'on exitosa. \\
+Criterio & Req. 2.1 --- ``Las cuentas, contrase\~nas y dem\'as par\'ametros de seguridad por defecto del proveedor deben modificarse antes de instalar un sistema en la red.'' \\
+Causa & Falta de procedimiento de hardening al desplegar la base de datos; ausencia de baseline de configuraci\'on segura verificado. \\
+Consecuencia/Efecto & Acceso administrativo total a la base que contiene el PAN; riesgo de exfiltraci\'on masiva de datos de tarjetahabientes (relacionado con anomal\'ia A-06). Compromiso directo del activo m\'as cr\'itico del CDE. \\
+Evidencia & PT-07, PT-OBS-01; logs A-01 (login exitoso sa) y A-06. \\
+Riesgo & \textbf{Cr\'itico} \\
+Recomendaci\'on & Cambiar de inmediato la contrase\~na de ``sa'' por una robusta y \'unica; deshabilitar o renombrar la cuenta ``sa''; habilitar ``Enforce password policy''; usar cuentas nominales con privilegios m\'inimos. \\
+Responsable sugerido & Administrador de Base de Datos / Gerente de TI \\
+Plazo sugerido & Inmediato ($\leq$ 24--48 h) \\
+\bottomrule
+\end{tabularx}
+
+% ---- OBS-02 ----
+\subsection{OBS-02: Credenciales por Defecto en APP-SRV-02}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Contenido} \\
+\midrule
+OC & OC-2 \\
+Naturaleza & Deficiencia de control / Incumplimiento normativo \\
+Condici\'on & El servidor APP-SRV-02 (RHEL 8) admite autenticaci\'on con la credencial por defecto admin/admin. \\
+Criterio & Req. 2.1 --- Eliminaci\'on/cambio de cuentas y contrase\~nas por defecto del proveedor. \\
+Causa & Hardening incompleto en el alta del servidor; la pol\'itica de contrase\~nas de APP-SRV-02 es m\'as d\'ebil (\texttt{minlen=8}, sin expiraci\'on --- PT-04). \\
+Consecuencia/Efecto & Acceso administrativo no autorizado a un servidor de procesamiento; posible pivote hacia DB-SRV-01. Vinculado a anomal\'ia A-02 (acceso 03:47 AM desde IP externa). \\
+Evidencia & PT-07, PT-04, PT-OBS-02; log A-02. \\
+Riesgo & \textbf{Cr\'itico} \\
+Recomendaci\'on & Eliminar/renombrar la cuenta ``admin'' por defecto; aplicar la misma pol\'itica de contrase\~nas que APP-SRV-01/03; restringir login por origen y horario. \\
+Responsable sugerido & Administrador de Sistemas / Gerente de TI \\
+Plazo sugerido & Inmediato ($\leq$ 24--48 h) \\
+\bottomrule
+\end{tabularx}
+
+% ---- OBS-03 ----
+\subsection{OBS-03: Cuenta Compartida ``operador\_cde'' en APP-SRV-03}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Contenido} \\
+\midrule
+OC & OC-1 \\
+Naturaleza & Deficiencia de control \\
+Condici\'on & Tres operadores (J. P\'erez, M. Sosa, R. G\'omez) comparten la cuenta gen\'erica ``\texttt{operador\_cde}'' en APP-SRV-03. \\
+Criterio & Req. 8.2.1 --- ``Se asigna a todos los usuarios un ID \'unico antes de otorgarles acceso a componentes del sistema o a datos de tarjetahabientes.'' \\
+Causa & Pr\'actica operativa de conveniencia; ausencia de control de provisi\'on de cuentas individuales. \\
+Consecuencia/Efecto & P\'erdida de trazabilidad y no repudio: imposibilidad de atribuir acciones a un individuo, debilitando la investigaci\'on de incidentes. \\
+Evidencia & PT-01, PT-02, PT-OBS-03; logs A-03 (uso desde m\'ultiples IP). \\
+Riesgo & \textbf{Alto} \\
+Recomendaci\'on & Crear cuentas individuales para cada operador; eliminar la cuenta gen\'erica; capacitar sobre prohibici\'on de cuentas compartidas. \\
+Responsable sugerido & Administrador de Sistemas \\
+Plazo sugerido & 30 d\'ias \\
+\bottomrule
+\end{tabularx}
+
+% ---- OBS-04 ----
+\subsection{OBS-04: MFA No Implementado para Acceso VPN Remoto al CDE}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Contenido} \\
+\midrule
+OC & OC-1 \\
+Naturaleza & Deficiencia de control / Incumplimiento normativo \\
+Condici\'on & Los accesos remotos al CDE a trav\'es de VPN-GW-01 utilizan \'unicamente usuario y contrase\~na, sin segundo factor de autenticaci\'on. \\
+Criterio & Req. 8.4.2 --- ``Se implementa MFA para todos los accesos al CDE.'' \\
+Causa & MFA no desplegado (en roadmap); configuraci\'on VPN \texttt{mfa = disabled}. \\
+Consecuencia/Efecto & Acceso remoto al CDE vulnerable a robo de credenciales y fuerza bruta; evidenciado por acceso desde nodo Tor (A-04). \\
+Evidencia & PT-03, PT-OBS-04; logs A-04, A-05. \\
+Riesgo & \textbf{Alto} \\
+Recomendaci\'on & Implementar MFA (TOTP/hardware token) para todo acceso VPN al CDE; restringir or\'igenes y aplicar geo-bloqueo. \\
+Responsable sugerido & Administrador de Red / Responsable de Seguridad \\
+Plazo sugerido & 30 d\'ias \\
+\bottomrule
+\end{tabularx}
+
+% ---- OBS-05 ----
+\subsection{OBS-05: Retenci\'on de Logs Insuficiente}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Contenido} \\
+\midrule
+OC & OC-1 \\
+Naturaleza & Incumplimiento normativo \\
+Condici\'on & Los logs de acceso al CDE se conservan solo 90 d\'ias; los registros anteriores se purgan autom\'aticamente. \\
+Criterio & Req. 10.7 --- ``El historial de auditor\'ia se retiene por al menos 12 meses, con un m\'inimo de 3 meses disponibles inmediatamente para an\'alisis.'' \\
+Causa & Pol\'itica de retenci\'on mal dimensionada (90 d\'ias); falta de almacenamiento de archivo hist\'orico. \\
+Consecuencia/Efecto & Imposibilidad de investigar incidentes ocurridos hace m\'as de 90 d\'ias; incumplimiento directo de PCI-DSS y dificultad probatoria ante el BCRA. \\
+Evidencia & PT-12, PT-OBS-05. \\
+Riesgo & \textbf{Alto} \\
+Recomendaci\'on & Ampliar la retenci\'on a $\geq$12 meses; implementar almacenamiento de archivo (cold storage) y verificar integridad (Req. 10.5). \\
+Responsable sugerido & Responsable de Seguridad / Administrador de Sistemas \\
+Plazo sugerido & 60 d\'ias \\
+\bottomrule
+\end{tabularx}
+
+% ---- OBS-06 ----
+\subsection{OBS-06: Puerto Telnet (23) Activo en SW-CDE-01}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Contenido} \\
+\midrule
+OC & OC-2 \\
+Naturaleza & Deficiencia de control \\
+Condici\'on & El switch SW-CDE-01 (Cisco Catalyst 2960) tiene habilitado el servicio Telnet (puerto 23) en texto plano, junto con SSH. \\
+Criterio & Req. 2.2.1 / 2.2.5 --- Configurar solo servicios necesarios y deshabilitar protocolos inseguros; el acceso administrativo no consola debe ser cifrado (Req. 2.2.7). \\
+Causa & Configuraci\'on legada no endurecida; falta de revisi\'on de servicios habilitados. \\
+Consecuencia/Efecto & Credenciales de administraci\'on del switch transmitidas en texto plano, susceptibles de captura (sniffing) dentro del CDE. \\
+Evidencia & PT-08, PT-OBS-06; log A-08 (login Telnet). \\
+Riesgo & \textbf{Medio} \\
+Recomendaci\'on & Deshabilitar Telnet (\texttt{no transport input telnet}); permitir solo SSH; aplicar ACL de gesti\'on desde VLAN 300. \\
+Responsable sugerido & Administrador de Red \\
+Plazo sugerido & 30 d\'ias \\
+\bottomrule
+\end{tabularx}
+
+% ---- OBS-07 ----
+\subsection{OBS-07: T\'ecnicos de Proveedor Externo sin NDA con Acceso al CDE}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Contenido} \\
+\midrule
+OC & OC-3 \\
+Naturaleza & Incumplimiento normativo \\
+Condici\'on & Dos t\'ecnicos de Mantenimiento S.R.L. (\texttt{tecnico\_ext1}, \texttt{tecnico\_ext2}) acceden al CDE sin acuerdo de confidencialidad (NDA) firmado. \\
+Criterio & Req. 12.8.3 --- ``Existe un proceso establecido para contratar proveedores de servicios, incluyendo la debida diligencia.'' ISO/IEC 27002:2022 Control 6.6 --- Acuerdos de confidencialidad. \\
+Causa & NDA con el proveedor nunca gestionado; contrato sin cl\'ausula de confidencialidad sobre CHD. \\
+Consecuencia/Efecto & Exposici\'on de datos de tarjetahabientes a terceros sin obligaci\'on contractual de confidencialidad; responsabilidad legal frente a la Ley 25.326. \\
+Evidencia & PT-11, PT-OBS-07; logs A-07. \\
+Riesgo & \textbf{Alto} \\
+Recomendaci\'on & Suspender los accesos hasta firmar NDA; incorporar cl\'ausula PCI/confidencialidad al contrato; mantener registro de proveedores con acceso al CHD (Req. 12.8.1). \\
+Responsable sugerido & Gerente de TI / Asesor\'ia Legal / RRHH \\
+Plazo sugerido & Inmediato (acceso) / 30 d\'ias (formalizaci\'on) \\
+\bottomrule
+\end{tabularx}
+
+\clearpage
+
+% ============================================================
+% ENTREGABLE 8 — CONTROLES ADECUADOS
+% ============================================================
+\section{Entregable 8 --- Controles Adecuados}
+
+% ---- CA-01 ----
+\subsection{CA-01: Pol\'itica ``deny-all'' en FW-CDE-01}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Detalle} \\
+\midrule
+OC & OC-2 \\
+Descripci\'on del control & El firewall FW-CDE-01 (FortiGate 100F) aplica una pol\'itica impl\'icita de denegaci\'on total (``deny-all''), permitiendo \'unicamente el tr\'afico definido por reglas expl\'icitas hacia/desde el CDE. \\
+Requisito PCI-DSS & Req. 1.3.2 (restricci\'on de tr\'afico; denegaci\'on por defecto) \\
+Evidencia & PT-06: regla final Deny ALL con logging; reglas expl\'icitas acotadas (443 banco, 1433 DB, 22 admin). \\
+Conclusi\'on & Control adecuado y eficaz. Reduce significativamente la superficie de exposici\'on del CDE. \\
+\bottomrule
+\end{tabularx}
+
+% ---- CA-02 ----
+\subsection{CA-02: Segmentaci\'on VLAN del CDE}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Detalle} \\
+\midrule
+OC & OC-2 \\
+Descripci\'on del control & La red est\'a segmentada en VLAN 100 (CDE), 200 (operativa) y 300 (administraci\'on), aislando el CDE de las dem\'as zonas. \\
+Requisito PCI-DSS & Req. 1.4 (controles entre redes confiables y no confiables) y gu\'ia de segmentaci\'on. \\
+Evidencia & PT-05: diagrama ``Topologia\_CDE\_v3'' coincide con ``show vlan brief'' de SW-CDE-01; ACL entre VLAN. \\
+Conclusi\'on & Control adecuado. La segmentaci\'on reduce el alcance del CDE; se recomienda probar su efectividad anualmente (Req. 11.4.5). \\
+\bottomrule
+\end{tabularx}
+
+% ---- CA-03 ----
+\subsection{CA-03: Pol\'itica de Contrase\~nas Compliant en APP-SRV-01 y APP-SRV-03}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Detalle} \\
+\midrule
+OC & OC-1 \\
+Descripci\'on del control & Las contrase\~nas locales en APP-SRV-01 y APP-SRV-03 cumplen Req. 8.3: m\'inimo 12 caracteres, complejidad ($\geq$3 clases) y expiraci\'on a 90 d\'ias. \\
+Requisito PCI-DSS & Req. 8.3.6 (longitud/complejidad) y 8.3.9 (rotaci\'on). \\
+Evidencia & PT-04: \texttt{minlen=12}; \texttt{minclass=3}; \texttt{maxdays=90} en \texttt{pwquality.conf} y \texttt{login.defs}. \\
+Conclusi\'on & Control adecuado en estos dos servidores. Debe extenderse a APP-SRV-02 y DB-SRV-01 para uniformidad (ver OBS-02). \\
+\bottomrule
+\end{tabularx}
+
+% ---- CA-04 ----
+\subsection{CA-04: NDAs Firmados de Todo el Personal Interno con Acceso al CDE}
+
+\begin{tabularx}{\textwidth}{P{3.5cm}L}
+\toprule
+\textbf{Campo} & \textbf{Detalle} \\
+\midrule
+OC & OC-3 \\
+Descripci\'on del control & La totalidad del personal interno (11 empleados) con acceso al CDE posee NDA firmado y vigente con cl\'ausula de confidencialidad sobre datos de tarjetahabientes. \\
+Requisito PCI-DSS / ISO & ISO/IEC 27002:2022 Control 6.6; alineado con Req. 12.8 (relaci\'on con terceros) y buenas pr\'acticas de RRHH. \\
+Evidencia & PT-10: 11/11 NDAs firmados (2024--2026) archivados en legajo digital de RRHH. \\
+Conclusi\'on & Control adecuado. Contrasta con la deficiencia de NDAs de terceros (OBS-07), que debe corregirse. \\
+\bottomrule
+\end{tabularx}
+
+\clearpage
+
+% ============================================================
+% ENTREGABLE 9 — RESUMEN EJECUTIVO PARA ALTA DIRECCIÓN
+% ============================================================
+\section{Entregable 9 --- Resumen Ejecutivo para Alta Direcci\'on}
+
+\begin{quote}
+\textbf{Para:} Directorio de CardProcess S.A.\\
+\textbf{De:} Quiroga, Bianchi \& Asociados --- Auditores en Seguridad de la Informaci\'on\\
+\textbf{Asunto:} Resultados de la Auditor\'ia de Cumplimiento PCI-DSS v4.0.1\\
+\textbf{Fecha:} 22 de junio de 2026
+\end{quote}
+
+\subsection{S\'intesis del Encargo y Alcance}
+
+Se audit\'o el cumplimiento de CardProcess S.A. respecto del est\'andar internacional PCI-DSS v4.0.1 (requisitos 1, 2, 7, 8 y 10) sobre el entorno donde se procesan y almacenan los datos de las tarjetas (CDE). El trabajo abarc\'o servidores de procesamiento, la base de datos de tarjetas, el firewall, el switch del CDE y los accesos remotos, durante mayo de 2026.
+
+\subsection{Hallazgos Principales (en lenguaje no t\'ecnico)}
+
+\begin{itemize}[leftmargin=*]
+  \item Dos sistemas cr\'iticos ---entre ellos la base de datos donde residen los n\'umeros de tarjeta--- conservan las claves de f\'abrica del proveedor (``admin/admin'' y ``sa/sa''), lo que equivale a dejar la caja fuerte con la combinaci\'on que viene impresa en el manual.
+  \item El acceso remoto a los sistemas no exige doble verificaci\'on (solo usuario y contrase\~na). Se detect\'o un ingreso desde una conexi\'on anonimizada en el exterior.
+  \item Los registros de actividad se borran a los 90 d\'ias, cuando la norma exige conservarlos un a\~no. Esto impide investigar incidentes pasados.
+  \item Tres operadores comparten una misma cuenta, por lo que no es posible saber qui\'en hizo qu\'e.
+  \item Dos t\'ecnicos de un proveedor externo acceden a los datos de tarjetas sin haber firmado un acuerdo de confidencialidad.
+  \item En el lado positivo: el firewall y la separaci\'on de redes est\'an bien configurados, y todo el personal propio tiene su acuerdo de confidencialidad firmado.
+\end{itemize}
+
+\subsection{Nivel de Cumplimiento General}
+
+\begin{tabularx}{\textwidth}{P{6cm}L}
+\toprule
+\textbf{Indicador} & \textbf{Resultado} \\
+\midrule
+Nivel de Confianza del ambiente de control (CEAC) & 46,34\% --- \textbf{BAJO} \\
+Sem\'aforo general & \textcolor{red}{\textbf{ROJO}} (no apto para certificaci\'on en el estado actual) \\
+Observaciones cr\'iticas & 2 \\
+Observaciones altas & 4 \\
+Observaciones medias & 1 \\
+Controles adecuados destacados & 4 \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Top 3 Riesgos Cr\'iticos}
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Base de datos de tarjetas con clave de f\'abrica (OBS-01):} un atacante podr\'ia extraer todos los n\'umeros de tarjeta. Riesgo de fuga masiva.
+  \item \textbf{Acceso remoto sin doble verificaci\'on (OBS-04):} puerta de entrada al coraz\'on del sistema con una sola barrera f\'acil de vulnerar.
+  \item \textbf{Servidor de procesamiento con clave de f\'abrica (OBS-02):} segundo punto de compromiso administrativo total.
+\end{enumerate}
+
+\subsection{Mensaje Clave --- Impacto en el Negocio}
+
+El estado actual expone a CardProcess S.A. a:
+
+\begin{itemize}[leftmargin=*]
+  \item P\'erdida de la certificaci\'on PCI-DSS, condici\'on para operar con los bancos emisores y las marcas de tarjetas.
+  \item Multas de las marcas (Visa/Mastercard) que pueden ir de USD 5.000 a USD 100.000 mensuales mientras persista el incumplimiento, adem\'as de sanciones por evento de fuga.
+  \item Sanciones bajo la Ley 25.326 y observaciones del BCRA (Com. ``A'' 7724) por inadecuada protecci\'on de datos personales y financieros.
+  \item Da\~no reputacional severo ante una fuga de datos: p\'erdida de confianza de los 3 bancos clientes y de los tarjetahabientes.
+\end{itemize}
+
+\subsection{Pr\'oximos Pasos Recomendados}
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Acci\'on inmediata ($\leq$48 h):} cambiar las credenciales por defecto en DB-SRV-01 y APP-SRV-02; suspender accesos de terceros sin NDA.
+  \item \textbf{30 d\'ias:} implementar MFA en accesos remotos, eliminar cuentas compartidas, deshabilitar Telnet, firmar NDAs de proveedores.
+  \item \textbf{60 d\'ias:} ampliar la retenci\'on de logs a 12 meses.
+  \item \textbf{90 d\'ias:} auditor\'ia de seguimiento para validar la remediaci\'on y preparar la recertificaci\'on PCI-DSS.
+\end{enumerate}
+
+\clearpage
+
+% ============================================================
+% ENTREGABLE 10 — INFORME DETALLADO PARA GERENCIA DE TI
+% ============================================================
+\section{Entregable 10 --- Informe Detallado para Gerencia de TI}
+
+\subsection{Resumen de Hallazgos por OC}
+
+\begin{tabularx}{\textwidth}{P{2.5cm}P{3cm}P{1.5cm}P{2cm}P{2.5cm}L}
+\toprule
+\textbf{OC} & \textbf{Pruebas realizadas} & \textbf{Conformes} & \textbf{No Conformes} & \textbf{Observaciones} & \textbf{Riesgo residual} \\
+\midrule
+OC-1 (Accesos/Trazabilidad) & PT-01, 02, 03, 04, 12 & 1 (CA-03 parcial) & 4 & OBS-03, 04, 05 & Alto \\
+OC-2 (Red/Configuraci\'on) & PT-05, 06, 07, 08 & 2 (CA-01, CA-02) & 2 & OBS-01, 02, 06 & Cr\'itico \\
+OC-3 (Personal/Terceros) & PT-09, 10, 11 & 1 (CA-04) & 2 & OBS-07 & Alto \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Detalle T\'ecnico de Cada Observaci\'on}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{OBS-01} (Req. 2.1 --- Cr\'itico): DB-SRV-01 autentica con sa/sa. Acci\'on t\'ecnica: \texttt{ALTER LOGIN sa DISABLE}; o renombrar; crear login nominal \texttt{CHECK\_POLICY=ON}. Validar que ninguna aplicaci\'on dependa de ``sa''.
+  \item \textbf{OBS-02} (Req. 2.1 --- Cr\'itico): APP-SRV-02 con admin/admin. Acci\'on: \texttt{userdel} o renombrar cuenta por defecto; alinear \texttt{pwquality.conf} (\texttt{minlen=12}, \texttt{maxdays=90}); habilitar fail2ban.
+  \item \textbf{OBS-03} (Req. 8.2.1 --- Alto): Cuenta \texttt{operador\_cde} compartida. Acci\'on: crear \texttt{jperez}, \texttt{msosa}, \texttt{rgomez}; migrar permisos; \texttt{userdel operador\_cde}; sudoers nominal.
+  \item \textbf{OBS-04} (Req. 8.4.2 --- Alto): VPN sin MFA. Acci\'on: integrar VPN-GW-01 con RADIUS/MFA (TOTP); pol\'itica \texttt{mfa = required}; restringir or\'igenes y geo-bloqueo de salidas Tor.
+  \item \textbf{OBS-05} (Req. 10.7 --- Alto): Retenci\'on 90 d\'ias. Acci\'on: reconfigurar syslog \texttt{retention >= 365 d\'ias}; cold storage; verificaci\'on de integridad (Req. 10.5.2); 3 meses online.
+  \item \textbf{OBS-06} (Req. 2.2.1 --- Medio): Telnet en SW-CDE-01. Acci\'on: \texttt{line vty 0 15 / transport input ssh}; \texttt{no ip telnet}; ACL de gesti\'on desde VLAN 300.
+  \item \textbf{OBS-07} (Req. 12.8.3 --- Alto): Proveedor sin NDA. Acci\'on: suspender accesos; firmar NDA con cl\'ausula PCI; addendum contractual; registro de proveedores (Req. 12.8.1).
+\end{itemize}
+
+\subsection{Hoja de Ruta de Remediaci\'on PCI-DSS}
+
+\begin{tabularx}{\textwidth}{P{1.5cm}P{4.5cm}P{2.5cm}P{1.5cm}L}
+\toprule
+\textbf{OBS} & \textbf{Acci\'on de remediaci\'on} & \textbf{Responsable} & \textbf{Plazo} & \textbf{Prioridad} \\
+\midrule
+OBS-01 & Deshabilitar/renombrar ``sa''; contrase\~na robusta; enforce policy. & DBA / Gte. TI & $\leq$48 h & Inmediato \\
+OBS-02 & Eliminar cuenta ``admin''; endurecer pol\'itica de contrase\~nas. & Adm. Sistemas & $\leq$48 h & Inmediato \\
+OBS-07 & Suspender accesos de terceros sin NDA. & Gte. TI / Legal & $\leq$48 h & Inmediato \\
+OBS-03 & Crear cuentas individuales; eliminar cuenta compartida. & Adm. Sistemas & 30 d\'ias & 30d \\
+OBS-04 & Implementar MFA en VPN; restringir or\'igenes. & Adm. Red / Seguridad & 30 d\'ias & 30d \\
+OBS-06 & Deshabilitar Telnet; solo SSH; ACL de gesti\'on. & Adm. Red & 30 d\'ias & 30d \\
+OBS-07 & Formalizar NDA y addendum contractual; registro de proveedores. & Legal / RRHH & 30 d\'ias & 30d \\
+OBS-05 & Ampliar retenci\'on de logs a $\geq$12 meses; cold storage. & Seguridad / Sistemas & 60 d\'ias & 60d \\
+Todas & Auditor\'ia de seguimiento y preparaci\'on de recertificaci\'on. & Auditor\'ia externa & 90 d\'ias & 90d \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Indicadores de Seguimiento Sugeridos (KPI/KRI)}
+
+\begin{tabularx}{\textwidth}{P{7cm}P{2.5cm}L}
+\toprule
+\textbf{Indicador} & \textbf{Meta} & \textbf{Frecuencia} \\
+\midrule
+\% de sistemas del CDE sin credenciales por defecto & 100\% & Mensual \\
+\% de accesos remotos al CDE con MFA & 100\% & Mensual \\
+\% de cuentas del CDE nominales (sin compartidas) & 100\% & Mensual \\
+Per\'iodo de retenci\'on de logs (meses) & $\geq$12 & Trimestral \\
+Intentos de login fallidos detectados/bloqueados & Tendencia & Semanal \\
+\% de proveedores con acceso al CHD con NDA vigente & 100\% & Trimestral \\
+Cambios en firewall con ticket asociado & 100\% & Mensual \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Referencias Normativas Completas}
+
+\begin{tabularx}{\textwidth}{P{5cm}L}
+\toprule
+\textbf{Referencia} & \textbf{Descripci\'on} \\
+\midrule
+PCI-DSS v4.0.1, Req. 1.2.1 & Diagrama de red actualizado del CDE. \\
+PCI-DSS v4.0.1, Req. 1.3 / 1.3.2 & Restricci\'on de tr\'afico hacia/desde el CDE; denegaci\'on por defecto. \\
+PCI-DSS v4.0.1, Req. 1.4 & Controles entre redes confiables y no confiables (segmentaci\'on). \\
+PCI-DSS v4.0.1, Req. 2.1 & Cambio de credenciales/par\'ametros por defecto del proveedor. \\
+PCI-DSS v4.0.1, Req. 2.2.1 / 2.2.5 / 2.2.7 & Configuraci\'on segura; deshabilitar servicios inseguros; cifrar acceso administrativo. \\
+PCI-DSS v4.0.1, Req. 7.2 & Restricci\'on de acceso por necesidad de saber y funci\'on. \\
+PCI-DSS v4.0.1, Req. 8.2.1 & ID \'unico por usuario. \\
+PCI-DSS v4.0.1, Req. 8.3.4 / 8.3.6 / 8.3.9 & Bloqueo por intentos; longitud/complejidad; rotaci\'on de contrase\~nas. \\
+PCI-DSS v4.0.1, Req. 8.4.2 & MFA para todo acceso al CDE. \\
+PCI-DSS v4.0.1, Req. 10.5 / 10.6 / 10.7 & Protecci\'on, revisi\'on y retenci\'on ($\geq$12 meses) de logs. \\
+PCI-DSS v4.0.1, Req. 12.8.1 / 12.8.2 / 12.8.3 & Gesti\'on de proveedores con acceso al CHD. \\
+ISO/IEC 27002:2022, Control 6.6 & Acuerdos de confidencialidad o no divulgaci\'on. \\
+ISO/IEC 27002:2022, Control 8.* & Controles tecnol\'ogicos (configuraci\'on, autenticaci\'on, registro). \\
+Ley 25.326 (Argentina) & Protecci\'on de Datos Personales; medidas de seguridad de datos. \\
+BCRA Com. ``A'' 7724 & Lineamientos de seguridad de la informaci\'on y ciberseguridad para entidades del sistema financiero. \\
+\bottomrule
+\end{tabularx}
+
+\clearpage
+
+% ============================================================
+% CIERRE
+% ============================================================
+\section*{Cierre e Informaci\'on del Equipo Auditor}
+
+\begin{quote}
+El presente informe se emite con fines acad\'emicos (Trabajo Final Integrador). La empresa CardProcess S.A., su personal, los hallazgos, las direcciones IP, los logs y toda la evidencia son ficticios y fueron construidos para ilustrar la aplicaci\'on metodol\'ogica de una auditor\'ia PCI-DSS v4.0.1. Las conclusiones se sustentan en los papeles de trabajo PT-01 a PT-12 y en las observaciones OBS-01 a OBS-07.
+\end{quote}
+
+\noindent\rule{\linewidth}{0.4pt}
+
+\vspace{1em}
+\textbf{Equipo auditor:}
+
+\begin{itemize}[leftmargin=*]
+  \item Lic. Mariana Quiroga --- Auditor L\'ider
+  \item Cr. Federico Bianchi --- Auditor Senior
+  \item Sr. Lucas Dom\'inguez --- Auditor Junior
+\end{itemize}
+
+\vspace{1em}
+\noindent Buenos Aires, 22 de junio de 2026.
+
+\vspace{2em}
+\noindent\rule{\linewidth}{0.4pt}
+
+\vspace{0.5em}
+\noindent{\small \textit{Documento clasificado --- distribuci\'on restringida a Directorio y Gerencia de TI de CardProcess S.A.}}
+
+\end{document}
