@@ -23,18 +23,19 @@ fontsize: 11pt
 
 | Campo | Detalle |
 |---|---|
-| **Título del trabajo** | Auditoría de Cumplimiento PCI-DSS v4.0.1 — Requisitos 1, 2, 7, 8 y 10 |
+| **Título del trabajo** | Auditoría de Cumplimiento PCI-DSS v4.0.1 — Diagnóstico de Seguridad para Expansión Comercial |
 | **Empresa auditada** | CardProcess S.A. |
 | **Domicilio** | Av. Corrientes 1234, Piso 8, Ciudad Autónoma de Buenos Aires, Argentina |
-| **Actividad** | Procesamiento de transacciones con tarjetas de crédito y débito |
-| **Tipo de entidad** | Service Provider (procesadora de pagos) |
-| **Volumen transaccional** | ~500.000 transacciones/mes para 3 bancos emisores |
-| **Dotación** | 47 empleados |
+| **Actividad** | Plataforma fintech de billetera digital y procesamiento de pagos B2B |
+| **Tipo de entidad** | Startup Fintech — Proveedor de Servicios de Pago (PSP) en proceso de certificación PCI-DSS Nivel 1 |
+| **Etapa de la empresa** | Scale-up (fundada 2023); negociaciones activas con clientes bancarios y corporativos |
+| **Volumen transaccional** | ~120.000 transacciones/mes (proyección: 400.000/mes en 2027) |
+| **Dotación** | 23 empleados |
 | **Marco de referencia** | PCI-DSS v4.0.1 (Payment Card Industry Data Security Standard) |
 | **Normativa complementaria** | Ley 25.326 (Protección de Datos Personales — Argentina); BCRA Comunicación "A" 7724; ISO/IEC 27002:2022 |
 | **Firma auditora** | Holgado, Guzmán & Asociados — Auditores en Sistemas de Información |
 | **Equipo auditor** | Holgado Adrián (Líder); Guzmán Mauro Emir (Senior); Chumba Fernando Javier (Especialista Técnico); Gil Fadda Angel (Auditor); Sosa Leandro Martín (Auditor) |
-| **Período auditado** | 01/05/2026 al 31/05/2026 |
+| **Período auditado** | 28/04/2026 al 20/06/2026 (8 semanas) |
 | **Fecha del informe** | 22 de junio de 2026 |
 | **Confidencialidad** | Documento clasificado — distribución restringida a Directorio y Gerencia de TI |
 
@@ -60,11 +61,12 @@ A los efectos de este TFI se definen tres **Objetos de Control (OC)** que estruc
 
 **Razón social:** Holgado, Guzmán & Asociados — Auditores en Sistemas de Información
 
-**Constitución y trayectoria:** La firma fue fundada en 2019 en la Ciudad Autónoma de Buenos Aires por profesionales egresados de la Universidad Tecnológica Nacional, con especialización en auditoría de cumplimiento normativo en sistemas de información, seguridad de la información y privacidad de datos para el sector financiero y de medios de pago. Desde su fundación ha ejecutado más de 25 encargos de auditoría y consultoría en organizaciones del sector.
+**Constitución y trayectoria:** La firma fue fundada en 2019 en la Ciudad Autónoma de Buenos Aires por profesionales egresados de la Universidad Tecnológica Nacional, con especialización en auditoría de cumplimiento normativo en sistemas de información, seguridad de la información y privacidad de datos para el sector financiero y de medios de pago. Desde su fundación ha ejecutado más de 25 encargos de auditoría y consultoría en organizaciones del sector, con especial experiencia en diagnósticos de postura de seguridad para empresas tecnológicas en etapas de crecimiento.
 
 **Áreas de especialización:**
 
-- Auditorías de cumplimiento PCI-DSS (v3.2.1 y v4.0.1) para procesadoras, emisores y adquirentes.
+- Auditorías de cumplimiento PCI-DSS (v3.2.1 y v4.0.1) para procesadoras, emisores, adquirentes y startups fintech.
+- Diagnósticos de brecha y preparación para certificación PCI-DSS en empresas de alto crecimiento.
 - Evaluaciones de cumplimiento bajo normativa BCRA (Com. A 7724, Com. A 6375, Com. A 7017).
 - Auditorías de brecha y certificación ISO/IEC 27001 / 27002.
 - Revisiones de arquitectura de seguridad en entornos CDE y pruebas de configuración segura.
@@ -74,10 +76,10 @@ A los efectos de este TFI se definen tres **Objetos de Control (OC)** que estruc
 
 | Año | Cliente (ficticio) | Encargo |
 |---|---|---|
-| 2022 | PayGroup S.A. | Diagnóstico de brecha PCI-DSS v3.2.1 y plan de remediación. |
+| 2022 | PayGroup S.A. | Diagnóstico de brecha PCI-DSS v3.2.1 y plan de remediación para startup de pagos en etapa de certificación. |
 | 2023 | Banco Regional del Noroeste | Auditoría de cumplimiento BCRA Com. A 6375 — ciberseguridad. |
-| 2024 | QuickPay S.R.L. | Evaluación de riesgo tecnológico en plataforma de pagos móviles. |
-| 2025 | FinTrust S.A. | Revisión de controles de acceso y gestión de identidades (ISO 27001). |
+| 2024 | QuickPay S.R.L. | Evaluación de postura de seguridad y riesgo tecnológico en plataforma fintech de pagos móviles pre-lanzamiento. |
+| 2025 | FinTrust S.A. | Revisión de controles de acceso y gestión de identidades (ISO 27001) como requisito previo a proceso de due diligence con inversor. |
 
 **Dotación:** 8 profesionales en planta; 5 asignados al presente encargo.
 
@@ -104,48 +106,71 @@ La firma Holgado, Guzmán & Asociados se rige por los siguientes principios éti
 
 ## 1.2 Comprensión del negocio del cliente
 
-### 1.2.1 Descripción de la organización
+### 1.2.1 Contexto estratégico — por qué esta auditoría
 
-CardProcess S.A. es una procesadora de pagos con tarjeta de crédito y débito clasificada como **Service Provider de Nivel 1** según PCI-DSS (más de 300.000 transacciones anuales). Opera como intermediario tecnológico entre bancos emisores y comercios adquirentes, procesando aproximadamente 500.000 transacciones mensuales para tres bancos clientes. Su domicilio legal se ubica en Av. Corrientes 1234, Piso 8, CABA, Argentina. Cuenta con 47 empleados distribuidos en las áreas de Tecnología, Operaciones, Seguridad de la Información y Administración.
+CardProcess S.A. es una startup fintech fundada en 2023 que ha desarrollado una plataforma propietaria de billetera digital y procesamiento de pagos B2B. Al cierre del primer cuatrimestre de 2026, la empresa procesa aproximadamente 120.000 transacciones mensuales con proyección de alcanzar 400.000 en 2027.
 
-### 1.2.2 Sector y modelo de negocio
+La empresa se encuentra en una **etapa de scale-up**: ha validado su producto con tres clientes piloto y mantiene negociaciones activas con dos bancos de tamaño mediano y una red de fintech B2B para contratos de mayor escala. En este proceso comercial surgió una exigencia concreta de sus prospectos:
+
+> **Los clientes bancarios y corporativos exigen, como condición previa a la firma del contrato, evidencia documentada de que CardProcess S.A. cumple con los requisitos de seguridad del estándar PCI-DSS v4.0.1.**
+
+Esta exigencia responde a una lógica de responsabilidad distribuida: cuando una entidad bancaria contrata a un procesador de pagos, asume responsabilidad ante las marcas de tarjetas (Visa, Mastercard) y ante el BCRA si ese procesador sufre un incidente que exponga datos de tarjetahabientes. Un informe de auditoría independiente transfiere parte de esa carga probatoria al proveedor auditado y reduce el riesgo percibido del comprador.
+
+**El encargo responde simultáneamente a dos necesidades estratégicas de CardProcess S.A.:**
+
+1. **Diagnóstico objetivo de postura de seguridad.** La empresa nunca fue auditada externamente. El equipo de tecnología —reducido y de perfil startup— requiere una evaluación independiente que identifique brechas reales antes de que las descubran sus clientes o, peor, un atacante. El diagnóstico permitirá priorizar inversiones de seguridad con criterio y evidencia.
+
+2. **Habilitador comercial y de negocio.** El informe de auditoría será utilizado como documento de debida diligencia (*due diligence*) en los procesos de venta B2B con clientes bancarios y corporativos. Contar con una auditoría independiente diferencia a CardProcess S.A. de competidores sin validación externa y acelera el cierre de contratos al reducir fricciones en las evaluaciones de riesgo de los compradores.
+
+**¿Por qué PCI-DSS v4.0.1 específicamente?**
+
+El estándar PCI-DSS v4.0.1 es el marco técnico exigido contractualmente por Visa y Mastercard para toda entidad que procese, almacene o transmita datos de tarjetahabientes. Dado que el producto central de CardProcess S.A. involucra procesamiento de datos de PAN y autenticación de pagos, este estándar es no negociable para operar en el ecosistema de pagos formal. La elección de los Requisitos 1, 2, 7, 8 y 10 como foco de la presente auditoría responde al análisis preliminar de riesgo realizado por la firma auditora: estos cinco requisitos cubren los vectores de compromiso más frecuentes en startups fintech (credenciales débiles o por defecto, ausencia de MFA, exposición de red y logs insuficientes para respuesta a incidentes).
+
+La presente auditoría no emite una certificación PCI-DSS formal (esto requiere la intervención de un Qualified Security Assessor —QSA— reconocido por el PCI SSC). Su propósito es producir un **diagnóstico técnico independiente** que CardProcess S.A. pueda presentar a sus prospectos como evidencia de madurez en seguridad y utilizarlo como hoja de ruta para alcanzar la certificación formal en 2027.
+
+### 1.2.2 Descripción de la organización
+
+CardProcess S.A. es una startup fintech fundada en 2023 con domicilio en Av. Corrientes 1234, Piso 8, CABA, Argentina. Ha desarrollado una plataforma propietaria de billetera digital y procesamiento de pagos B2B que permite a sus clientes emitir tarjetas virtuales, procesar pagos y gestionar flujos de dinero digital. Al volumen actual (~120.000 transacciones/mes), la empresa se aproxima al umbral que la clasificaría como **Service Provider de Nivel 1** ante las redes Visa/Mastercard (>300.000 transacciones anuales), lo que hace urgente la preparación para la certificación. Cuenta con 23 empleados distribuidos en las áreas de Producto & Tecnología, Operaciones, Seguridad de la Información y Administración.
+
+### 1.2.3 Sector y modelo de negocio
 
 | Característica | Descripción |
 |---|---|
-| Industria | Servicios financieros — medios de pago electrónico |
-| Posición en la cadena de pagos | Procesadora intermediaria (entre banco emisor y comercio adquirente) |
-| Clientes directos | 3 bancos emisores con contrato de procesamiento vigente |
-| Modelo de ingresos | Comisión por transacción procesada (fee por volumen) |
-| Regulador principal | BCRA (Com. A 7724 — lineamientos de ciberseguridad para entidades financieras) |
-| Estándar de cumplimiento obligatorio | PCI-DSS v4.0.1 (condición contractual de los bancos clientes y las redes Visa/Mastercard) |
+| Industria | Fintech — billetera digital y medios de pago B2B |
+| Etapa | Scale-up; producto validado con 3 clientes piloto; negociaciones activas con bancos y corporaciones |
+| Clientes actuales | 3 clientes piloto (empresas medianas de comercio electrónico) |
+| Clientes objetivo | Bancos medianos, fintech B2B, empresas con necesidad de pagos corporativos |
+| Modelo de ingresos | SaaS mensual (acceso a plataforma) + comisión por transacción procesada |
+| Regulador principal | BCRA (Com. A 7724 — lineamientos de ciberseguridad para entidades del sistema financiero) |
+| Estándar de cumplimiento requerido | PCI-DSS v4.0.1 (exigido por Visa/Mastercard y por prospectos bancarios como condición contractual) |
 | Marco legal de protección de datos | Ley 25.326 — Protección de Datos Personales (Argentina) |
-| Consecuencia del incumplimiento | Pérdida de certificación PCI-DSS, suspensión de operaciones, multas de redes (USD 5.000–100.000/mes) |
+| Consecuencia del incumplimiento | Imposibilidad de cerrar contratos con clientes bancarios; eventual multa de redes (USD 5.000–100.000/mes); pérdida de reputación en etapa crítica de crecimiento |
 
-### 1.2.3 Procesos de TI clave
+### 1.2.4 Procesos de TI clave
 
 1. **Autorización de transacciones:** recepción del PAN desde el banco emisor vía TLS 1.2, validación contra DB-SRV-01 y respuesta en tiempo real (< 2 segundos). Es el proceso central del negocio y el de mayor exposición.
-2. **Liquidación y compensación:** cierre de lote diario, generación de archivos de liquidación para los bancos clientes y conciliación de saldos.
+2. **Emisión de tarjetas virtuales:** generación y gestión de PAN virtuales para clientes B2B, con almacenamiento cifrado en DB-SRV-01.
 3. **Administración del CDE:** gestión de servidores APP-SRV-01/02/03 y DB-SRV-01 incluyendo parchado, control de accesos, gestión de cuentas y monitoreo.
-4. **Accesos remotos:** administración de VPN (VPN-GW-01) para acceso de personal de soporte y proveedores externos al CDE.
+4. **Accesos remotos:** administración de VPN (VPN-GW-01) para acceso del equipo técnico y de proveedores externos al CDE desde entornos de trabajo remoto (práctica habitual en startups).
 5. **Monitoreo y logging:** registro de eventos de seguridad en servidor de logs (VLAN 300) con alertas configuradas sobre anomalías.
 6. **Gestión de proveedores:** soporte de infraestructura tercerizado a Mantenimiento S.R.L., con acceso al CDE para tareas de mantenimiento.
 
-### 1.2.4 Riesgos inherentes de la industria
+### 1.2.5 Riesgos inherentes de la industria
 
 | # | Riesgo | Descripción | Req. PCI-DSS |
 |---|---|---|---|
-| R-1 | Exfiltración de datos de tarjeta (PAN) | Compromiso de la base de datos CDE podría exponer millones de PANs de tarjetahabientes, generando responsabilidad civil y regulatoria. | Req. 3, 4, 10 |
-| R-2 | Acceso no autorizado al CDE | Credenciales comprometidas (por defecto o débiles), insider threat o acceso remoto sin MFA permiten intrusión en el ambiente más crítico. | Req. 7, 8 |
-| R-3 | Ataques de red (MITM, sniffing) | Comunicaciones no cifradas o protocolos inseguros dentro del CDE o en accesos de gestión facilitan la captura de credenciales o datos. | Req. 1, 2, 4 |
-| R-4 | Riesgo de terceros y proveedores | Acceso de proveedores sin controles ni acuerdos adecuados constituye un vector de amenaza de baja visibilidad y alta probabilidad. | Req. 12.8 |
-| R-5 | Riesgo regulatorio y de certificación | El incumplimiento de PCI-DSS implica pérdida de certificación, suspensión de operaciones por los bancos clientes y multas de redes de pago. | Todos |
-| R-6 | Retención insuficiente de evidencia forense | Sin logs históricos suficientes, los incidentes de seguridad no pueden investigarse retroactivamente, impidiendo la respuesta ante fraude. | Req. 10 |
+| R-1 | Exfiltración de datos de tarjeta (PAN) | Compromiso de DB-SRV-01 podría exponer PANs de tarjetahabientes, generando responsabilidad civil y regulatoria. En una startup, este evento puede ser terminal para el negocio. | Req. 3, 4, 10 |
+| R-2 | Acceso no autorizado al CDE | Credenciales débiles o por defecto, ausencia de MFA o acceso remoto no controlado son vectores críticos en entornos de trabajo remoto típicos de startups. | Req. 7, 8 |
+| R-3 | Ataques de red (MITM, sniffing) | Comunicaciones no cifradas o protocolos inseguros dentro del CDE facilitan la captura de credenciales o datos en tránsito. | Req. 1, 2, 4 |
+| R-4 | Deuda técnica de seguridad | Las startups frecuentemente priorizan velocidad de desarrollo sobre seguridad; configuraciones por defecto, cuentas genéricas y políticas de contraseñas débiles son hallazgos típicos. | Req. 2, 8 |
+| R-5 | Riesgo de terceros y proveedores | Acceso de proveedores sin controles formales es un vector de amenaza de baja visibilidad y alta probabilidad, especialmente cuando los contratos no contemplan cláusulas de confidencialidad. | Req. 12.8 |
+| R-6 | Retención insuficiente de evidencia forense | Sin logs históricos suficientes, los incidentes no pueden investigarse retroactivamente, impidiendo la respuesta ante fraude y dificultando el cumplimiento de exigencias probatorias del BCRA. | Req. 10 |
 
 ---
 
 ## 1.3 Objetivos del encargo
 
-**Objetivo general:** Evaluar el grado de cumplimiento de CardProcess S.A. respecto de los requisitos 1, 2, 7, 8 y 10 del estándar PCI-DSS v4.0.1 sobre el Entorno de Datos de Tarjetahabientes (CDE — *Cardholder Data Environment*), emitiendo un informe de hallazgos, observaciones y recomendaciones de remediación.
+**Objetivo general:** Evaluar el grado de cumplimiento de CardProcess S.A. respecto de los Requisitos 1, 2, 7, 8 y 10 del estándar PCI-DSS v4.0.1 sobre el Entorno de Datos de Tarjetahabientes (CDE — *Cardholder Data Environment*), emitiendo un informe de hallazgos, brechas y recomendaciones de remediación que sirva como herramienta de diagnóstico interno y como evidencia de postura de seguridad ante clientes bancarios y corporativos.
 
 **Objetivos específicos:**
 
@@ -155,7 +180,7 @@ CardProcess S.A. es una procesadora de pagos con tarjeta de crédito y débito c
 4. Validar los mecanismos de identificación y autenticación de usuarios, incluyendo MFA y políticas de contraseñas (Req. 8).
 5. Verificar el registro, la protección y la retención de los logs de actividad del CDE (Req. 10).
 6. Evaluar el tratamiento formal del personal interno y de terceros con acceso al CDE (Req. 12 parcial, ISO 27002:2022).
-7. Determinar el nivel de confianza del ambiente de control y emitir recomendaciones priorizadas.
+7. Determinar el nivel de confianza del ambiente de control, identificar las brechas de mayor prioridad y emitir una hoja de ruta de remediación orientada a la obtención de la certificación PCI-DSS formal.
 
 ## 1.4 Alcance — Delimitación del CDE
 
@@ -174,7 +199,7 @@ El alcance se circunscribe al **Cardholder Data Environment (CDE)** de CardProce
 
 **Fuera del alcance:** sistemas de RRHH, contabilidad, correo corporativo y otros activos no conectados al CDE ni con capacidad de impactar su seguridad. La validez de la segmentación que excluye estos activos se prueba como parte del trabajo (PT-05).
 
-**Limitaciones declaradas:** la auditoría se basa en evidencia recolectada durante el período 01/05/2026–31/05/2026 mediante muestreo; no constituye una Evaluación QSA formal ni emite un Reporte de Cumplimiento (RoC) oficial ante el PCI SSC. Es un trabajo de naturaleza académica con metodología profesional.
+**Limitaciones declaradas:** la auditoría se basa en evidencia recolectada durante el período 28/04/2026–20/06/2026 mediante muestreo; no constituye una Evaluación QSA formal ni emite un Reporte de Cumplimiento (RoC) oficial ante el PCI SSC.
 
 ## 1.5 Metodología
 
@@ -182,12 +207,12 @@ El trabajo aplica una metodología mixta basada en cuatro técnicas de auditorí
 
 | Técnica | Descripción | Aplicación |
 |---|---|---|
-| **Entrevistas** | Reuniones estructuradas con responsables de TI, Seguridad y RRHH. | Gerente de TI, Administrador de Red, Responsable de Seguridad, Jefe de RRHH. |
+| **Entrevistas** | Reuniones estructuradas con responsables de TI, Seguridad, RRHH y el equipo fundador. | CEO/CTO, Gerente de TI, Administrador de Red, Responsable de Seguridad, Jefe de RRHH. |
 | **Revisión documental** | Análisis de políticas, diagramas de red, matrices de acceso, legajos, NDAs y tickets de cambio. | Políticas de seguridad, diagrama CDE, matriz de accesos, contratos de terceros. |
 | **Pruebas técnicas** | Inspección de configuraciones, reglas de firewall, listados de usuarios, escaneo de puertos, análisis de logs. | FW-CDE-01, SW-CDE-01, APP/DB-SRV, VPN-GW-01. |
-| **Observación directa** | Verificación presencial de prácticas y controles físicos/lógicos. | Sesiones de login, operación de POS, accesos de terceros. |
+| **Observación directa** | Verificación presencial de prácticas y controles físicos/lógicos. | Sesiones de login, accesos de terceros, prácticas operativas del equipo. |
 
-El enfoque es de **riesgo**: se prioriza la evaluación de los controles cuya falla tendría mayor impacto sobre la confidencialidad de los datos de tarjetahabientes (PAN, datos sensibles de autenticación).
+El enfoque es de **riesgo**: se prioriza la evaluación de los controles cuya falla tendría mayor impacto sobre la confidencialidad de los datos de tarjetahabientes (PAN, datos sensibles de autenticación) y sobre la viabilidad comercial de la empresa.
 
 **Marco normativo de referencia:** PCI-DSS v4.0.1 (marco principal); ISO/IEC 27002:2022 (controles complementarios en OC-3); Ley 25.326 (marco legal argentino); BCRA Com. A 7724 (lineamientos sectoriales).
 
@@ -195,56 +220,72 @@ El enfoque es de **riesgo**: se prioriza la evaluación de los controles cuya fa
 
 ## 1.6 Equipo asignado con roles y responsabilidades
 
-| Rol | Nombre | Responsabilidades | Dedicación |
+| Rol | Nombre | Responsabilidades | Horas asignadas |
 |---|---|---|---|
-| **Líder de Auditoría** | Holgado Adrián | Dirección estratégica del encargo; relación con la Dirección de CardProcess; revisión de calidad de papeles de trabajo; firma del informe final; coordinación de reuniones de apertura y cierre. | 3 días |
-| **Auditor Senior** | Guzmán Mauro Emir | Ejecución de pruebas técnicas OC-1 y OC-2; revisión de reglas de firewall, matrix de accesos y configuraciones de servidores; redacción de hallazgos críticos; supervisión del equipo. | 10 días |
-| **Especialista Técnico** | Chumba Fernando Javier | Pruebas técnicas especializadas: escaneo de puertos (nmap), análisis detallado de logs de acceso, verificación de credenciales por defecto, análisis de configuraciones de red. | 7 días |
-| **Auditor** | Gil Fadda Angel | Revisión documental: políticas de seguridad, diagrama CDE, matriz de accesos, contratos de terceros; evaluación OC-3 (aspectos formales y NDAs); elaboración de papeles de trabajo documentales. | 8 días |
-| **Auditor** | Sosa Leandro Martín | Análisis de logs y retención; revisión de legajos de personal y acuerdos de confidencialidad; armado y numeración de papeles de trabajo; soporte en reuniones de entrevistas. | 8 días |
+| **Líder de Auditoría** | Holgado Adrián | Dirección estratégica del encargo; relación con el Directorio y CEO de CardProcess; revisión de calidad de papeles de trabajo; firma del informe final; coordinación de reuniones de apertura, seguimiento y cierre. | 44 h |
+| **Auditor Senior** | Guzmán Mauro Emir | Ejecución de pruebas técnicas OC-1 y OC-2; revisión de reglas de firewall, matriz de accesos y configuraciones de servidores; redacción de hallazgos críticos; supervisión técnica del equipo. | 128 h |
+| **Especialista Técnico** | Chumba Fernando Javier | Pruebas técnicas especializadas: escaneo de puertos (nmap), análisis detallado de logs de acceso, verificación de credenciales por defecto, análisis de configuraciones de red y VPN. | 100 h |
+| **Auditor** | Gil Fadda Angel | Revisión documental: políticas de seguridad, diagrama CDE, matriz de accesos, contratos de terceros; evaluación OC-3 (aspectos formales y NDAs); elaboración de papeles de trabajo documentales. | 96 h |
+| **Auditor** | Sosa Leandro Martín | Análisis de logs y retención; revisión de legajos de personal y acuerdos de confidencialidad; armado y numeración de papeles de trabajo; soporte en reuniones de entrevistas. | 96 h |
 
-**Total:** 36 días-hombre distribuidos en 3 semanas de trabajo de campo.
+**Total:** 464 horas-profesional distribuidas en 8 semanas de trabajo.
 
-## 1.7 Cronograma estimado en semanas
+## 1.7 Cronograma estimado — 8 semanas
 
-| Semana | Período | Actividades principales | Técnica | Responsables |
+| Semana | Período | Actividades principales | Técnica principal | Responsables |
 |---|---|---|---|---|
-| **Semana 1** | 04/05 – 09/05/2026 | Reunión de apertura con Gerente de TI y Responsable de Seguridad · Relevamiento general del CDE · Recolección de documentación (políticas, diagrama de red, matriz de accesos, contratos) · Comprensión del entorno tecnológico y primeras entrevistas | Entrevistas / Revisión documental | Holgado Adrián (coord.) + todo el equipo |
-| **Semana 2** | 11/05 – 16/05/2026 | **OC-2:** Revisión reglas FW-CDE-01, segmentación VLAN, escaneo de puertos SW-CDE-01, verificación credenciales por defecto (PT-05 a PT-08) · **OC-1:** Verificación cuentas, MFA en VPN, política de contraseñas, análisis de logs (PT-01 a PT-04, PT-12) · **OC-3:** Revisión legajos, NDAs internos y de terceros (PT-09 a PT-11) | Pruebas técnicas / Observación / Revisión documental | Guzmán M.E. / Chumba F.J. / Gil Fadda A. / Sosa L.M. |
-| **Semana 3** | 18/05 – 22/05/2026 | Consolidación de papeles de trabajo · Elaboración de observaciones en formato NCCCE · Clasificación de controles adecuados · Reunión de cierre con CardProcess (comunicación de hallazgos preliminares) · Redacción del informe final (Partes A y B) | Análisis / Entrevistas / Redacción | Holgado Adrián (coord.) + equipo |
+| **Sem. 1** | 28/04 – 02/05/2026 | Reunión de apertura con CEO, CTO y Gerente de TI · Relevamiento general del CDE · Recolección de documentación (políticas, diagrama de red, contratos) · Primeras entrevistas y comprensión del entorno tecnológico | Entrevistas / Revisión documental | Holgado (coord.) + todo el equipo |
+| **Sem. 2** | 05/05 – 09/05/2026 | Revisión diagrama CDE y segmentación VLAN · Análisis reglas FW-CDE-01 (deny-all, reglas explícitas) · Inicio verificación de credenciales por defecto en dispositivos · Verificación del diagrama de flujo de datos de tarjetahabientes | Pruebas técnicas / Revisión documental | Guzmán M.E. / Chumba F.J. |
+| **Sem. 3** | 12/05 – 16/05/2026 | Escaneo de puertos y servicios abiertos (PT-08) · Pruebas de autenticación con credenciales por defecto en DB-SRV-01 y APP-SRV-02 (PT-07) · Inicio revisión de matriz de accesos al CDE (PT-01) | Pruebas técnicas | Chumba F.J. / Guzmán M.E. |
+| **Sem. 4** | 19/05 – 23/05/2026 | Verificación de cuentas individuales vs. cuentas compartidas (PT-02) · Prueba MFA en VPN-GW-01 (PT-03) · Revisión de política de contraseñas en servidores CDE (PT-04) | Pruebas técnicas / Entrevistas | Guzmán M.E. / Chumba F.J. |
+| **Sem. 5** | 26/05 – 30/05/2026 | Recolección y análisis de logs de acceso al CDE — últimos 30 días (PT-12) · Identificación de anomalías · Revisión de legajos de personal (PT-09) y NDAs internos (PT-10) | Análisis de logs / Revisión documental | Sosa L.M. / Gil Fadda A. |
+| **Sem. 6** | 02/06 – 06/06/2026 | Verificación de NDAs de proveedores externos — Mantenimiento S.R.L. (PT-11) · Reunión intermedia de hallazgos preliminares con CTO · Cierre del trabajo de campo · Verificación de controles adecuados | Entrevistas / Revisión documental | Gil Fadda A. / Sosa L.M. / Holgado (coord.) |
+| **Sem. 7** | 09/06 – 13/06/2026 | Consolidación de los 12 PT + PT-OBS · Redacción de observaciones en formato NCCCE (5-8 obs.) · Documentación de controles adecuados (3-5) · Revisión de calidad por Líder | Análisis / Redacción | Holgado / Guzmán M.E. / equipo |
+| **Sem. 8** | 16/06 – 20/06/2026 | Redacción Parte A — Resumen Ejecutivo para Alta Dirección · Redacción Parte B — Informe Detallado con Hoja de Ruta PCI-DSS · Reunión de cierre con Directorio y CEO · Entrega del informe final | Redacción / Entrevistas | Holgado / Guzmán M.E. |
 
-> **Nota:** la defensa oral ante el docente está programada para el 25 de junio de 2026, conforme al cronograma institucional de UTN-FRT.
+> **Nota académica:** La defensa oral ante el docente está programada para el 25 de junio de 2026 conforme al cronograma institucional de UTN-FRT.
 
 ## 1.8 Presupuesto de honorarios
 
-Los honorarios se calculan tomando como referencia las recomendaciones del Consejo Profesional de Ciencias Informáticas de la Provincia de Córdoba (CPCI), expresados en dólares estadounidenses (USD) para mitigar el efecto inflacionario, con facturación en pesos argentinos al tipo de cambio oficial (BCRA) vigente a la fecha de cada factura.
+Los honorarios se calculan conforme a las tarifas recomendadas por el **Consejo Profesional de Ciencias Informáticas de la Provincia de Córdoba (CPCI)**, actualizadas al **índice IPIM de mayo de 2026**, expresadas en pesos argentinos (ARS). Los valores se facturarán en ARS a los precios vigentes al momento de cada hito de pago.
 
-> **Nota:** Los valores USD indicados son referenciales y de carácter académico. Para un encargo real, deberán actualizarse conforme a los Honorarios Recomendados vigentes del CPCI (actualizados por índice IPIM).
+> **Nota sobre variabilidad cambiaria:** Dado el contexto macroeconómico argentino, los honorarios expresados en ARS son válidos por **30 días corridos** desde la fecha de la propuesta. Ante una variación del índice IPIM superior al **10%** en el período de ejecución, las partes acordarán el reajuste proporcional de los honorarios pendientes.
 
-### 1.8.1 Detalle por rol y días asignados
+### 1.8.1 Referencia tarifaria CPCI — roles aplicados
 
-| Rol | Profesional | Tarifa diaria (USD) | Días asignados | Subtotal (USD) |
+| Rol auditor | Categoría CPCI equivalente | Tarifa CPCI ($ hora x demanda) |
+|---|---|---|
+| Líder de Auditoría | Conducción y Liderazgo — Líder \| Director de Proyecto | $120.858,75 |
+| Auditor Senior | Consultoría — Consultor Seguridad de la Información | $113.839,02 |
+| Especialista Técnico | IT Infraestructura Tecnológica — Seguridad Informática | $94.610,47 |
+| Auditor (×2) | Analistas Funcionales — Auditor Interno Informático | $72.958,58 |
+
+*Fuente: CPCI — Honorarios Recomendados, actualización 05-2026 (índice IPIM). Consulta: junio 2026.*
+
+### 1.8.2 Detalle por profesional — horas y honorarios
+
+| Rol | Profesional | Tarifa ($/h) | Horas asignadas | Subtotal (ARS) |
 |---|---|---|---|---|
-| Líder de Auditoría | Holgado Adrián | USD 350 | 3 | USD 1.050 |
-| Auditor Senior | Guzmán Mauro Emir | USD 250 | 10 | USD 2.500 |
-| Especialista Técnico | Chumba Fernando Javier | USD 220 | 7 | USD 1.540 |
-| Auditor | Gil Fadda Angel | USD 180 | 8 | USD 1.440 |
-| Auditor | Sosa Leandro Martín | USD 180 | 8 | USD 1.440 |
-| **SUBTOTAL honorarios profesionales** | | | **36 días-hombre** | **USD 7.970** |
+| Líder de Auditoría | Holgado Adrián | $120.858,75 | 44 h | $5.317.785,00 |
+| Auditor Senior | Guzmán Mauro Emir | $113.839,02 | 128 h | $14.571.394,56 |
+| Especialista Técnico | Chumba Fernando Javier | $94.610,47 | 100 h | $9.461.047,00 |
+| Auditor | Gil Fadda Angel | $72.958,58 | 96 h | $7.004.023,68 |
+| Auditor | Sosa Leandro Martín | $72.958,58 | 96 h | $7.004.023,68 |
+| **SUBTOTAL honorarios profesionales** | | | **464 h** | **$43.358.273,92** |
 
-### 1.8.2 Resumen presupuestario
+### 1.8.3 Resumen presupuestario
 
-| Concepto | Importe (USD) |
+| Concepto | Importe (ARS) |
 |---|---|
-| Honorarios profesionales | USD 7.970 |
-| Gastos administrativos y materiales (estimado 5%) | USD 399 |
-| **Subtotal neto** | **USD 8.369** |
-| IVA (21%) | USD 1.757 |
-| **TOTAL DEL ENCARGO** | **USD 10.126** |
+| Honorarios profesionales | $43.358.273,92 |
+| Gastos administrativos y materiales (5%) | $2.167.913,70 |
+| **Subtotal neto** | **$45.526.187,62** |
+| IVA (21%) | $9.560.499,40 |
+| **TOTAL DEL ENCARGO** | **$55.086.687,02** |
 
-**Condiciones de pago:** 40 % al inicio del encargo (firma de la carta de compromiso) — 60 % contra entrega del informe final aprobado.
+**Condiciones de pago:** 40% al inicio del encargo (firma de la carta de compromiso) — $22.034.674,81 ARS · 60% contra entrega del informe final aprobado — $33.052.012,21 ARS.
 
-**Validez de la propuesta:** 30 días corridos desde la fecha de emisión.
+**Validez de la propuesta:** 30 días corridos desde la fecha de emisión. Los valores se ajustarán por índice IPIM conforme a lo indicado al inicio de esta sección.
 
 ---
 
@@ -252,14 +293,14 @@ Los honorarios se calculan tomando como referencia las recomendaciones del Conse
 
 &nbsp;
 
-> Buenos Aires, 22 de abril de 2026
+> Buenos Aires, 14 de abril de 2026
 
 **CARTA DE COMPROMISO DE AUDITORÍA**
 
 **Señores**
 **CardProcess S.A.**
 Av. Corrientes 1234, Piso 8 — Ciudad Autónoma de Buenos Aires
-**Att.: Ing. Marcela Fontana — Gerente General**
+**Att.: Lic. Valentina Torres — CEO & Co-Fundadora**
 
 &nbsp;
 
@@ -267,29 +308,30 @@ Por medio de la presente, **Holgado, Guzmán & Asociados — Auditores en Sistem
 
 **1. Objeto del encargo**
 
-La Firma realizará una auditoría de cumplimiento del estándar **PCI-DSS v4.0.1** sobre el Cardholder Data Environment (CDE) de CardProcess S.A., con foco en los Requisitos 1, 2, 7, 8 y 10, durante el período **01/05/2026 al 31/05/2026**.
+La Firma realizará una auditoría de cumplimiento del estándar **PCI-DSS v4.0.1** sobre el Cardholder Data Environment (CDE) de CardProcess S.A., con foco en los Requisitos 1, 2, 7, 8 y 10, durante el período **28/04/2026 al 20/06/2026** (8 semanas). El informe resultante tendrá por finalidad proveer al Cliente un diagnóstico técnico independiente de su postura de seguridad y una hoja de ruta hacia la certificación formal.
 
 **2. Responsabilidades de la Firma auditora**
 
 - Ejecutar el encargo conforme a los estándares de ISACA (ITAF), el PCI SSC y el Código de Ética enunciado en el apartado 1.1 del presente documento.
 - Mantener estricta confidencialidad sobre toda la información del Cliente durante y después del encargo.
 - Comunicar de manera inmediata a la Gerencia de TI cualquier hallazgo de riesgo crítico que se detecte durante el trabajo de campo, sin esperar a la emisión del informe final.
-- Emitir el informe final dentro de los 5 días hábiles posteriores a la finalización del trabajo de campo.
+- Emitir el informe final dentro de los 5 días hábiles posteriores a la finalización del trabajo de campo (fecha estimada de entrega: 22/06/2026).
+- Realizar una reunión intermedia de hallazgos preliminares al finalizar la Semana 6, de modo de anticipar las observaciones críticas y permitir al Cliente iniciar acciones de remediación sin demora.
 
 **3. Responsabilidades del Cliente**
 
 - Proveer acceso irrestricto a los sistemas, documentación y personal del CDE durante el período de auditoría.
-- Designar un interlocutor técnico (Gerente de TI) para la coordinación operativa del encargo.
+- Designar un interlocutor técnico (Gerente de TI o CTO) para la coordinación operativa del encargo.
 - No interferir en los juicios profesionales ni en las conclusiones del equipo auditor.
 - Notificar de inmediato cualquier incidente de seguridad ocurrido durante el período auditado que pueda afectar la integridad de la evidencia.
 
 **4. Alcance y limitaciones**
 
-La presente auditoría cubre los Requisitos 1, 2, 7, 8 y 10 de PCI-DSS v4.0.1 sobre el CDE definido en el apartado 1.4. No constituye una Evaluación QSA formal ni emite un Reporte de Cumplimiento (RoC) oficial.
+La presente auditoría cubre los Requisitos 1, 2, 7, 8 y 10 de PCI-DSS v4.0.1 sobre el CDE definido en el apartado 1.4. No constituye una Evaluación QSA formal ni emite un Reporte de Cumplimiento (RoC) oficial ante el PCI SSC. El informe es de uso interno y para procesos de due diligence comercial del Cliente.
 
 **5. Honorarios y condiciones de pago**
 
-Las partes acuerdan los honorarios detallados en el apartado 1.8 (USD 10.126 + IVA), con el esquema de pago 40/60 allí establecido.
+Las partes acuerdan los honorarios detallados en el apartado 1.8 (**$55.086.687,02 ARS + IVA incluido**), con el esquema de pago 40/60 allí establecido. Los valores están sujetos a ajuste por índice IPIM conforme a las condiciones indicadas en dicho apartado.
 
 **6. Vigencia**
 
@@ -302,12 +344,31 @@ El presente compromiso tiene vigencia desde la firma de ambas partes hasta la en
 **POR LA FIRMA AUDITORA** | **POR CARDPROCESS S.A.**
 ---|---
 Firma: _________________________ | Firma: _________________________
-**Holgado Adrián** | **Ing. Marcela Fontana**
-Líder de Auditoría | Gerente General
+**Holgado Adrián** | **Lic. Valentina Torres**
+Líder de Auditoría | CEO & Co-Fundadora
 Holgado, Guzmán & Asociados | CardProcess S.A.
-Buenos Aires, 22 de abril de 2026 | Buenos Aires, 22 de abril de 2026
+Buenos Aires, 14 de abril de 2026 | Buenos Aires, 14 de abril de 2026
 
 ---
+
+## Bibliografía y Referencias — Entregable 1
+
+### Normas y estándares
+
+- PCI Security Standards Council. (2022). *Payment Card Industry Data Security Standard (PCI-DSS) v4.0.1*. PCI SSC. Recuperado de https://www.pcisecuritystandards.org/document_library/
+- International Organization for Standardization. (2022). *ISO/IEC 27002:2022 — Information security, cybersecurity and privacy protection: Information security controls*. ISO.
+- ISACA. (2014). *Information Technology Assurance Framework (ITAF), 3.ª edición*. ISACA. Recuperado de https://www.isaca.org/resources/isaca-journal/issues/2014/volume-6/information-technology-assurance-framework-itaf-3rd-edition
+
+### Marco legal argentino
+
+- Honorable Congreso de la Nación Argentina. (2000). *Ley N.º 25.326 — Protección de Datos Personales*. InfoLeg. Recuperado de https://servicios.infoleg.gob.ar/infolegInternet/anexos/60000-64999/64790/texact.htm
+- Banco Central de la República Argentina. (2023). *Comunicación "A" 7724 — Lineamientos de Seguridad de la Información y Ciberseguridad para entidades financieras*. BCRA. Recuperado de https://www.bcra.gob.ar/Pdfs/comytexord/A7724.pdf
+
+### Recursos profesionales y fuentes consultadas
+
+- Colegio Profesional de Ciencias Informáticas de la Provincia de Córdoba (CPCI). (2026, mayo). *Honorarios Recomendados — Actualizados por índice IPIM*. Recuperado de https://cpcipc.org.ar/honorarios-recomendados/
+- ISACA Capítulo Buenos Aires. *Recursos y certificaciones para auditores de sistemas*. Recuperado de https://engage.isaca.org/buenosaireschapter/home
+- PCI Security Standards Council. *Document Library — PCI DSS v4.0.1 resources*. Recuperado de https://www.pcisecuritystandards.org/document_library/
 
 \newpage
 
